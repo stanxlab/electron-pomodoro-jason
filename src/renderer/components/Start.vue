@@ -2,26 +2,33 @@
 <template>
     <div id="start-wrapper">
         
-        <el-row :gutter="20">
-            <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="pastPercent"></el-progress>
+        <el-row :gutter="10" class="time-wrapper">
+            <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="data.pastPercent"></el-progress>
+
+            <div class="work-time">
+                  <el-col :span="10"><div class="grid-content"></div></el-col>
+                  <el-col :span="4">
+
+                    <div v-if="isWorking || isResting">
+                      <span class="ipt-time ipt-time-span">{{data.displayTime}}</span>
+                    </div>
+                    <div v-else>
+                      <el-input v-model="data.setTime"  size="medium"
+                          class="ipt-time" 
+                      placeholder="setTime"></el-input>
+                    </div> 
+         
+                </el-col>
+                <el-col :span="10"><div class="grid-content"></div></el-col>
+            </div>
         </el-row>
 
-        <el-row :gutter="20" class="work-time">
-          <div v-if="isRuning">
-            <el-input v-model="displayTime" width="30px" size="medium"
-                class="ipt-time" :disabled="true"
-             placeholder="displayTime"></el-input>
-          </div>
-          <div v-else>
-            <el-input v-model="workTime" width="30px" size="medium"
-                class="ipt-time"
-             placeholder="workTime"></el-input>
-          </div>   
-        </el-row>
-
         <el-row :gutter="20">
-            <div v-if="isRuning">
-                <el-button type="warning" v-on:click="stop()">Pause</el-button>
+            <div v-if="isWorking">
+                <el-button type="warning" v-on:click="stop()">Stop</el-button>
+            </div>
+             <div v-else-if="isResting">
+                <el-button type="primary" v-on:click="start()">Start</el-button>
             </div>
              <div v-else>
                 <el-button type="primary" v-on:click="start()">Start</el-button>
@@ -30,7 +37,8 @@
 
         <el-row :gutter="20">
     
-                <el-button v-on:click="test()">test</el-button>
+          <el-button v-on:click="test()">test-{{data.count}}--{{total}}</el-button>
+          <el-button v-on:click="increment()">Incr</el-button>
         
         </el-row>
 
@@ -38,31 +46,30 @@
 </template>
 
 <script>
-let stime = 0;
+import { startTypes } from "../constants";
+import { mapGetters, mapState, mapActions } from "vuex";
+
 export default {
-  name: "start",
   data() {
-    const config = {
-      workTime: localStorage.getItem("workTime") || 25, // minute
-      restTime: localStorage.getItem("restTime") || 5 // minute
-    };
     return {
-      config,
-      intervalTime: 1000, // 1s
-      workTime: config.workTime,
-      displayTime: "",
-      pastTime: 0,
-      totalTime: 0,
-      pastPercent: 0,
-      isRuning: false,
-      _timer: null
+      _timer_1: null
     };
   },
-  created() {
-    this.init();
+  computed: {
+    ...mapState({
+      data: state => state.Start
+    }),
+    ...mapGetters({
+      total: "cartTotal",
+      isWorking: "isWorking",
+      isResting: "isResting",
+      isPauseing: "isPauseing",
+      isStoped: "isStoped"
+    })
   },
+  created() {},
   methods: {
-    init() {},
+    ...mapActions(["increment"]),
     setFullScreen() {
       webIpc.setFullScreen(true);
     },
@@ -71,71 +78,41 @@ export default {
     },
 
     stop() {
-      this.isRuning = false;
-      this.displayTime = "";
-      clearInterval(this._timer);
+      clearInterval(this._timer_1);
+      this._timer_1 = null;
+      return this.$store.dispatch(startTypes.stop);
     },
     start() {
-      stime = Date.now();
-      console.log("start: ", new Date().toLocaleString());
-      clearInterval(this._timer);
-      this.isRuning = true;
-      this.workTime = this.workTime | 0;
-      this.totalTime = this.workTime * 60 * 1000;
-      this.displayTime = this._toTimeString(this.totalTime);
+      const dispatch = this.$store.dispatch;
+      const state = this.$store.state.Start;
 
-      this._timer = setInterval(() => {
-        // 剩余时间倒计时
-        this.displayTime = this._toTimeString(this.totalTime - this.pastTime);
-        this.pastTime += this.intervalTime;
-        this.pastPercent = parseFloat(
-          ((this.pastTime / this.totalTime) * 100).toFixed(2)
-        );
-        // console.log(this.pastPercent, this.pastTime, this.totalTime);
-        if (this.pastTime >= this.totalTime) {
-          clearInterval(this._timer);
-          this._timer = null;
-          this.over();
-        }
-      }, this.intervalTime);
+      dispatch(startTypes.start_work);
+      console.log("====", state, state.pastTime, state.totalTime);
+      if (state.pastTime >= state.totalTime) {
+        this.over();
+        return;
+      }
+      dispatch(startTypes.incrPastTime);
+      this._timer_1 = setInterval(() => {
+        dispatch(startTypes.incrPastTime);
+      }, state.intervalGap * 1000);
     },
     over() {
-      this.isRuning = false;
-      this.pastTime = 0;
-      // 重置输入框时间
-      if (this.workTime === this.config.workTime) {
-        this.workTime = this.config.restTime;
-      } else {
-        this.workTime = this.config.workTime;
-      }
-      console.log(Date.now() - stime, new Date().toLocaleString());
+      this.$store.dispatch(startTypes.stop);
+      clearInterval(this._timer_1);
+      this._timer_1 = null;
+      // console.log(Date.now() - stime, new Date().toLocaleString());
       // 强制显示主页面
       this.setFullScreen();
       webIpc.showMainWindow();
     },
-    _toTimeString(timeMs) {
-      let second = timeMs / 1000;
-      let remainSecond = second;
-      let hour = (remainSecond / 60 / 60) | 0;
-      remainSecond -= hour ? hour * 3600 : 0;
-      let minute = (remainSecond / 60) | 0;
-      remainSecond -= minute ? minute * 60 : 0;
-      // console.log(hour, minute, remainSecond, second);
-      let str = "";
-      str += hour ? `${this._padZero(hour)}:` : "";
-      str += minute ? `${this._padZero(minute)}:` : "00:";
-      str += this._padZero(remainSecond);
-      return str;
-    },
-    _padZero(num) {
-      return num < 10 ? `0${num}` : num;
-    },
+
     test() {
       // shell 模块不能用???
       // let shell = webIpc.getShell();
       // 在用户默认浏览器中打开URL的示例:
       // shell.openExternal("https://github.com");
-      console.log(this.workTime, this.$store);
+      console.log(this.workTime, this.$store.state.Start);
       return;
       // 打开新窗口
       let url = "https://github.com";
@@ -157,13 +134,33 @@ export default {
 </script>
 <style lang="scss" scope>
 #start-wrapper {
+  .time-wrapper {
+    position: relative;
+  }
+
+  // 进度条与背景颜色一致
+  .el-progress__text {
+    color: #e9eef3;
+  }
   .ipt-time {
     width: 80px;
+    background-color: #e9eef3;
     text-align: center;
+    height: 80px;
+    font-size: 20px;
+  }
+  .ipt-time-span {
+    text-align: center;
+    background-color: #e9eef3;
+    line-height: 50px;
+    font-size: 50px;
   }
 
   .work-time {
-    background-color: #000;
+    position: absolute;
+    width: 100%;
+    top: 150px;
+    text-align: center;
   }
 }
 </style>

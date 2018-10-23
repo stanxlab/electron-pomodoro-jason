@@ -5,8 +5,11 @@ if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = "production";
 
 console.info("Main start...", process.env.NODE_ENV);
 
+const isDev = () => {
+  return process.env.NODE_ENV !== "production";
+};
 
-if (process.env.NODE_ENV !== "production") {
+if (isDev()) {
   // debug
   // require("electron-debug")({ showDevTools: true });
   let watchFiles = ["./main.js", "./index.html", "./src"];
@@ -20,25 +23,20 @@ if (process.env.NODE_ENV !== "production") {
 let mainWindow;
 
 function createWindow() {
-  // Create the browser window.
   mainWindow = new BrowserWindow({ width: 1200, height: 800 });
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
   // mainWindow.loadURL('http://localhost:8090');
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
   // Emitted when the window is closed.
   mainWindow.on("closed", function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null;
   });
 
-  mainWindow.webContents.openDevTools({ mode: "right" });
+  if (isDev()) {
+    mainWindow.webContents.openDevTools({ mode: "right" });
+  }
 
   __initEvent();
 }

@@ -13,8 +13,7 @@
             </el-main>
         </el-container>
 
-        <el-footer v-on:click="test()">
-                <el-button v-on:click="test()">testapp</el-button>
+        <el-footer>
              <SystemInfo></SystemInfo> 
         </el-footer>
     </el-container>
@@ -27,7 +26,6 @@ console.log("msg from app.vue");
 import Start from "./components/Start";
 import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
-import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "app-index",

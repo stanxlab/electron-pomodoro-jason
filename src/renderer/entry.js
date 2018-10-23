@@ -7,8 +7,9 @@ import "./test.ts";
 
 
 
-// Vue 
+// Vue 代码
 
+// 这种引入方式不能使用 store
 // import Vue from "vue/dist/common";
 import Vue from "vue";
 
@@ -17,8 +18,6 @@ import "element-ui/lib/theme-chalk/index.css";
 
 import App from "./App";
 import store from "./store";
-
-console.log("-----", store);
 
 Vue.use(ElementUI);
 
