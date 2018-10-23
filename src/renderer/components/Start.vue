@@ -6,7 +6,7 @@
             <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="pastPercent"></el-progress>
         </el-row>
 
-        <el-row :gutter="20">
+        <el-row :gutter="20" class="work-time">
           <div v-if="isRuning">
             <el-input v-model="displayTime" width="30px" size="medium"
                 class="ipt-time" :disabled="true"
@@ -42,9 +42,14 @@ let stime = 0;
 export default {
   name: "start",
   data() {
-    return {
-      intervalTime: 1000, // 1s
+    const config = {
       workTime: localStorage.getItem("workTime") || 25, // minute
+      restTime: localStorage.getItem("restTime") || 5 // minute
+    };
+    return {
+      config,
+      intervalTime: 1000, // 1s
+      workTime: config.workTime,
       displayTime: "",
       pastTime: 0,
       totalTime: 0,
@@ -96,6 +101,13 @@ export default {
     },
     over() {
       this.isRuning = false;
+      this.pastTime = 0;
+      // 重置输入框时间
+      if (this.workTime === this.config.workTime) {
+        this.workTime = this.config.restTime;
+      } else {
+        this.workTime = this.config.workTime;
+      }
       console.log(Date.now() - stime, new Date().toLocaleString());
       // 强制显示主页面
       this.setFullScreen();
@@ -123,7 +135,8 @@ export default {
       // let shell = webIpc.getShell();
       // 在用户默认浏览器中打开URL的示例:
       // shell.openExternal("https://github.com");
-
+      console.log(this.workTime, this.$store);
+      return;
       // 打开新窗口
       let url = "https://github.com";
       const BrowserWindowProxy = window.open(url);
@@ -147,6 +160,10 @@ export default {
   .ipt-time {
     width: 80px;
     text-align: center;
+  }
+
+  .work-time {
+    background-color: #000;
   }
 }
 </style>

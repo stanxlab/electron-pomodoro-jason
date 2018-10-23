@@ -3,26 +3,28 @@
 webIpc.indexTest();
 
 // ts 部分代码文件
-import './test.ts';
+import "./test.ts";
 
 
 
 // Vue 
 
-import Vue from 'vue/dist/vue.js';
-// import Vue from 'vue';
+// import Vue from "vue/dist/common";
+import Vue from "vue";
 
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
 
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import App from "./App";
+import store from "./store";
 
-import App from './App';
+console.log("-----", store);
 
 Vue.use(ElementUI);
 
 new Vue({
     components: { App },
     // router,
-    // store,
-    template: '<App/>'
-}).$mount('#vue-root');
+    store,
+    template: "<App/>"
+}).$mount("#vue-root");

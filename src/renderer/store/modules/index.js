@@ -13,8 +13,11 @@
 
 // export default modules
 
-import Counter from './Counter';
 
-export default {
+import Counter from "./Counter";
+
+const modules = {
   Counter,
-}
+};
+
+export default modules; 

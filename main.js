@@ -1,14 +1,19 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
 
-console.info("Main start...");
+if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = "production";
 
-// debug
-require("electron-debug")({ showDevTools: true });
-let watchFiles = ["./main.js", "./index.html", "./src"];
-require("electron-reload")(watchFiles, {
-  electron: require(`${__dirname}/node_modules/electron`)
-});
+console.info("Main start...", process.env.NODE_ENV);
+
+
+if (process.env.NODE_ENV !== "production") {
+  // debug
+  // require("electron-debug")({ showDevTools: true });
+  let watchFiles = ["./main.js", "./index.html", "./src"];
+  require("electron-reload")(watchFiles, {
+    electron: require(`${__dirname}/node_modules/electron`)
+  });
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -32,6 +37,9 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.webContents.openDevTools({ mode: "right" });
+
   __initEvent();
 }
 

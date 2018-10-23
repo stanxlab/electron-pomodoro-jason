@@ -1,6 +1,7 @@
 
 <template>
-    <el-container>
+    <div id="vue-root">
+      <el-container>
         <el-header></el-header>
         <el-container>
             <!-- <el-aside width="100px">
@@ -12,10 +13,12 @@
             </el-main>
         </el-container>
 
-        <el-footer>
+        <el-footer v-on:click="test()">
+                <el-button v-on:click="test()">testapp</el-button>
              <SystemInfo></SystemInfo> 
         </el-footer>
     </el-container>
+    </div>
 </template>
 
 
@@ -24,10 +27,16 @@ console.log("msg from app.vue");
 import Start from "./components/Start";
 import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "app-index",
-  components: { Start, SystemInfo }
+  components: { Start, SystemInfo },
+  methods: {
+    test() {
+      console.log("appp: ", this.$store);
+    }
+  }
 };
 </script>
 

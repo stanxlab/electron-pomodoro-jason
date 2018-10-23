@@ -11,13 +11,13 @@
   <div id="vue-root"></div>
 
   <!-- All of the Node.js APIs are available in this renderer process. -->
-  <!-- 
+
   <hr />
   <h3>Hello World 3444!</h3>
   We are using Node.js
   <script>document.write(process.versions.node)</script>, Chromium
   <script>document.write(process.versions.chrome)</script>, and Electron
-  <script>document.write(process.versions.electron)</script>. -->
+  <script>document.write(process.versions.electron)</script>.
 
   <script>
     // 标记给 parcel, 不使用Websocket 刷页面
@@ -25,11 +25,11 @@
 
     // You can also require other files to run in this process
     window.webIpc = require("./src/webIpc/index.js");
-    // console.log(window.webIpc);
-    // require('./dist/entry.js');
+    console.log(window.webIpc);
+    require('./dist/entry.js');
   </script>
 
-  <script src="./dist/entry.js"></script>
+  <!-- <script src="./dist/entry.js"></script> -->
 </body>
 
 </html>
