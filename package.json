@@ -1,0 +1,29 @@
+{
+  "name": "electron-pomodoro-jason",
+  "version": "1.0.0",
+  "description": "Electron application ",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . && parcel watch src/renderer/entry.js"
+  },
+  "repository": "https://github.com/zengxp0605/electron-pomodoro-jason",
+  "author": "Jason Zeng",
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^2.2.0",
+    "cssnano": "^4.1.5",
+    "electron": "^3.0.4",
+    "electron-debug": "^2.0.0",
+    "sass": "^1.14.3",
+    "typescript": "^3.1.3",
+    "electron-reload": "^1.2.5",
+    "vue-hot-reload-api": "^2.3.1",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "dependencies": {
+    "element-ui": "^2.4.8",
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
+  }
+}
