@@ -3,17 +3,17 @@
     <div id="start-wrapper">
         
         <el-row :gutter="10" class="time-wrapper">
-            <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="data.pastPercent"></el-progress>
+            <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="pastPercent"></el-progress>
 
             <div class="work-time">
                   <el-col :span="10"><div class="grid-content"></div></el-col>
                   <el-col :span="4">
 
                     <div v-if="isWorking || isResting">
-                      <span class="ipt-time ipt-time-span">{{data.displayTime}}</span>
+                      <span class="ipt-time ipt-time-span">{{displayTime}}</span>
                     </div>
                     <div v-else>
-                      <el-input v-model="data.setTime"  size="medium"
+                      <el-input v-model="setTime"  size="medium"
                           class="ipt-time" 
                       placeholder="setTime"></el-input>
                     </div> 
@@ -24,10 +24,15 @@
         </el-row>
 
         <el-row :gutter="20">
-            <div v-if="isWorking">
-                <el-button type="warning" v-on:click="stop()">Stop</el-button>
+            <div v-if="isWorking || isResting">
+                <el-button type="danger" v-on:click="stop()">Stop</el-button>
+                <el-button type="warning" v-on:click="pause()">Pause</el-button>
             </div>
-             <div v-else-if="isResting">
+             <div v-else-if="isPauseing">
+                <el-button type="primary" v-on:click="start()">Start</el-button>
+                 <el-button type="danger" v-on:click="stop()">Stop</el-button>
+            </div>
+             <div v-else-if="isStoped">
                 <el-button type="primary" v-on:click="start()">Start</el-button>
             </div>
              <div v-else>
@@ -37,7 +42,7 @@
 
         <el-row :gutter="20">
     
-          <el-button v-on:click="test()">test-{{data.count}}--{{total}}</el-button>
+          <el-button v-on:click="test()">test-{{count}}--{{total}}</el-button>
           <el-button v-on:click="increment()">Incr</el-button>
         
         </el-row>
@@ -57,7 +62,11 @@ export default {
   },
   computed: {
     ...mapState({
-      data: state => state.Start
+      // data: state => state.Start,
+      count: state => state.Start.count,
+      pastPercent: state => state.Start.pastPercent,
+      setTime: state => state.Start.setTime,
+      displayTime: state => state.Start.displayTime
     }),
     ...mapGetters({
       total: "cartTotal",
@@ -82,16 +91,21 @@ export default {
       this._timer_1 = null;
       return this.$store.dispatch(startTypes.stop);
     },
+    pause() {
+      clearInterval(this._timer_1);
+      this._timer_1 = null;
+      return this.$store.dispatch(startTypes.pause);
+    },
     start() {
       const dispatch = this.$store.dispatch;
       const state = this.$store.state.Start;
 
       dispatch(startTypes.start_work);
-      console.log("====", state, state.pastTime, state.totalTime);
       if (state.pastTime >= state.totalTime) {
         this.over();
         return;
       }
+
       dispatch(startTypes.incrPastTime);
       this._timer_1 = setInterval(() => {
         dispatch(startTypes.incrPastTime);

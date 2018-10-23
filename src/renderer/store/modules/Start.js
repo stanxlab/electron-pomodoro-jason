@@ -54,7 +54,6 @@ const mutations = {
         state.curStatus = STATUS.stop;
     },
     [startTypes.pause](state) {
-        state.pastTime = 0;
         state.lastStatus = state.curStatus;
         state.curStatus = STATUS.pause;
     },
@@ -62,7 +61,6 @@ const mutations = {
         state.pastTime += state.intervalGap;
         state.pastPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
         state.displayTime = _toTimeString(state.totalTime - state.pastTime);
-        console.log("------", state.pastPercent);
     }
 };
 
@@ -72,7 +70,6 @@ const _toTimeString = (second) => {
     remainSecond -= hour ? hour * 3600 : 0;
     let minute = (remainSecond / 60) | 0;
     remainSecond -= minute ? minute * 60 : 0;
-    // console.log(hour, minute, remainSecond, second);
     let str = "";
     str += hour ? `${_padZero(hour)}:` : "";
     str += minute ? `${_padZero(minute)}:` : "00:";
@@ -89,6 +86,11 @@ const actions = {
     increment: ({ commit }) => commit("increment"),
     [startTypes.start_work]: ({ commit, state, dispatch }) => {
         console.log("start---work, state.lastStatus: ", state.lastStatus);
+        // 开始
+        if (state.lastStatus === STATUS.work) {
+
+        }
+
         commit(startTypes.start_work);
     },
     [startTypes.start_rest]: ({ commit }) => commit(startTypes.start_rest),
