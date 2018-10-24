@@ -1,25 +1,69 @@
 
+<style lang="scss" scope>
+#start-wrapper {
+  .time-wrapper {
+    position: relative;
+  }
+
+  // 进度条与背景颜色一致
+  // .el-progress__text {
+  //   color: #e9eef3;
+  // }
+
+  // new
+  .center-time-wrap {
+    border: 1px solid #9f71db;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 360px;
+  }
+  .center-time-inner {
+    background-color: #e9eef3; // 覆盖进度条文字
+    border: 1px solid #9f71db;
+    height: 100px;
+    line-height: 100px;
+    margin-top: 130px;
+    text-align: center;
+  }
+  span.display-time {
+    text-align: center;
+    line-height: 100px;
+    font-size: 50px;
+  }
+  .ipt-time {
+    width: 70px;
+    text-align: center;
+    font-size: 25px;
+  }
+  .ipt-time input {
+    padding: 5px;
+    text-align: center;
+  }
+}
+</style>
+
 <template>
     <div id="start-wrapper">
         
         <el-row :gutter="10" class="time-wrapper">
-            <el-progress type="circle" :width="360"  :stroke-width="10" :percentage="pastPercent"></el-progress>
+            <el-progress type="circle" :width="360" :stroke-width="10" :percentage="pastPercent"></el-progress>
 
-            <div class="work-time">
-                  <el-col :span="10"><div class="grid-content"></div></el-col>
-                  <el-col :span="4">
-
-                    <div v-if="isWorking || isResting">
-                      <span class="ipt-time ipt-time-span">{{displayTime}}</span>
-                    </div>
-                    <div v-else>
-                      <el-input v-model="setTime"  size="medium"
-                          class="ipt-time" 
-                      placeholder="setTime"></el-input>
-                    </div> 
-         
+            <div class="center-time-wrap" >
+                  <!-- <el-col :span="8"><div class="grid-content bg-purple"></div></el-col> -->
+                  <el-col :span="8" :offset="8">
+                    <div class="center-time-inner" >
+                      <div v-if="isWorking || isResting">
+                       <span class="display-time">{{displayTime}}</span>
+                      </div>
+                      <div v-else>
+                        <el-input v-model="setTime"  size="medium"
+                            class="ipt-time" 
+                        placeholder="setTime"></el-input>
+                      </div> 
+                  </div>
                 </el-col>
-                <el-col :span="10"><div class="grid-content"></div></el-col>
+
             </div>
         </el-row>
 
@@ -57,15 +101,23 @@ import { mapGetters, mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
+      progress_diameter: 360, // 进度条直径
       _timer_1: null
     };
   },
   computed: {
+    setTime: {
+      get() {
+        return this.$store.state.Start.setTime;
+      },
+      set(value) {
+        this.$store.commit(startTypes.updateSetTime, value);
+      }
+    },
     ...mapState({
       // data: state => state.Start,
       count: state => state.Start.count,
       pastPercent: state => state.Start.pastPercent,
-      setTime: state => state.Start.setTime,
       displayTime: state => state.Start.displayTime
     }),
     ...mapGetters({
@@ -100,19 +152,20 @@ export default {
       const dispatch = this.$store.dispatch;
       const state = this.$store.state.Start;
 
-      dispatch(startTypes.start_work);
-      if (state.pastTime >= state.totalTime) {
-        this.over();
-        return;
-      }
+      dispatch(startTypes.start);
 
       dispatch(startTypes.incrPastTime);
       this._timer_1 = setInterval(() => {
+        console.log(state.pastTime, state.totalTime);
+        if (state.pastTime >= state.totalTime) {
+          this.over();
+          return;
+        }
         dispatch(startTypes.incrPastTime);
       }, state.intervalGap * 1000);
     },
     over() {
-      this.$store.dispatch(startTypes.stop);
+      this.$store.dispatch(startTypes.over);
       clearInterval(this._timer_1);
       this._timer_1 = null;
       // console.log(Date.now() - stime, new Date().toLocaleString());
@@ -146,35 +199,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scope>
-#start-wrapper {
-  .time-wrapper {
-    position: relative;
-  }
-
-  // 进度条与背景颜色一致
-  .el-progress__text {
-    color: #e9eef3;
-  }
-  .ipt-time {
-    width: 80px;
-    background-color: #e9eef3;
-    text-align: center;
-    height: 80px;
-    font-size: 20px;
-  }
-  .ipt-time-span {
-    text-align: center;
-    background-color: #e9eef3;
-    line-height: 50px;
-    font-size: 50px;
-  }
-
-  .work-time {
-    position: absolute;
-    width: 100%;
-    top: 150px;
-    text-align: center;
-  }
-}
-</style>

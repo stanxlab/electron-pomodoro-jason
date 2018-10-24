@@ -6,12 +6,11 @@ import { startTypes } from "../../constants";
  */
 const config = JSON.parse(localStorage.getItem("config") || "{}");
 Object.assign(config, {
-    workTime: 35, // 工作时间
+    workTime: 25, // 工作时间
     shotRestTime: 5, // 短暂休息时间
     longRestTime: 15, // 长暂休息时间
     longRestGap: 3, // 长休息时间的间隔(3个短 1 长)
 });
-
 
 const STATUS = {
     work: "work",
@@ -30,10 +29,6 @@ const state = {
     intervalGap: 1, // 定时器间隔 1s
     displayTime: "", // 倒计时显示的时钟
 
-    isWorking: false,
-    isResting: false,
-    isPauseing: false,
-
     lastStatus: "", // 上一步的状态
     curStatus: "none", // 当前状态
 };
@@ -48,14 +43,24 @@ const mutations = {
         state.lastStatus = state.curStatus;
         state.curStatus = STATUS.work;
     },
+    [startTypes.start_rest](state) {
+        state.totalTime = state.setTime * 60;
+        state.lastStatus = state.curStatus;
+        state.curStatus = STATUS.rest;
+    },
     [startTypes.stop](state) {
         state.pastTime = 0;
+        state.pastPercent = 0;
+        state.displayTime = "";
         state.lastStatus = state.curStatus;
         state.curStatus = STATUS.stop;
     },
     [startTypes.pause](state) {
         state.lastStatus = state.curStatus;
         state.curStatus = STATUS.pause;
+    },
+    [startTypes.updateSetTime](state, vaule) {
+        state.setTime = vaule;
     },
     [startTypes.incrPastTime](state) {
         state.pastTime += state.intervalGap;
@@ -84,8 +89,11 @@ const _padZero = (num) => {
 
 const actions = {
     increment: ({ commit }) => commit("increment"),
-    [startTypes.start_work]: ({ commit, state, dispatch }) => {
-        console.log("start---work, state.lastStatus: ", state.lastStatus);
+    [startTypes.start]: ({ commit, state }) => {
+        console.log("start-, state.lastStatus: ", state.lastStatus);
+        commit(startTypes.start_work);
+    },
+    [startTypes.start_work]: ({ commit, state }) => {
         // 开始
         if (state.lastStatus === STATUS.work) {
 
@@ -94,6 +102,11 @@ const actions = {
         commit(startTypes.start_work);
     },
     [startTypes.start_rest]: ({ commit }) => commit(startTypes.start_rest),
+    [startTypes.over]: ({ commit }) => {
+        // 正常结束
+
+        commit(startTypes.stop);
+    },
     [startTypes.incrPastTime]: ({ commit }) => commit(startTypes.incrPastTime),
     [startTypes.pause]: ({ commit }) => {
         commit(startTypes.pause);
@@ -101,11 +114,6 @@ const actions = {
     [startTypes.stop]: ({ commit }) => {
         commit(startTypes.stop);
     },
-    // incrementIfOdd({ commit, state }) {
-    //     if ((state.count + 1) % 2 === 0) {
-    //         commit("increment");
-    //     }
-    // },
     // incrementAsync({ commit }) {
     //     return new Promise((resolve, reject) => {
     //         setTimeout(() => {
@@ -124,11 +132,8 @@ const getters = {
     isResting: state => state.curStatus === STATUS.rest,
     isPauseing: state => state.curStatus === STATUS.pause,
     isStoped: state => state.curStatus === STATUS.stop,
-    // evenOrOdd: state => state.count % 2 === 0 ? "even" : "odd"
 };
 
-// A Vuex instance is created by combining the state, mutations, actions,
-// and getters.
 export default {
     // namespaced: true,
     state,

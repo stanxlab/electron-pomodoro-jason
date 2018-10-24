@@ -12,7 +12,7 @@ const isDev = () => {
 if (isDev()) {
   // debug
   // require("electron-debug")({ showDevTools: true });
-  let watchFiles = ["./main.js", "./index.html", "./src"];
+  let watchFiles = ["./main.js", "./index.html", "./src/webIpc", "./dist"];
   require("electron-reload")(watchFiles, {
     electron: require(`${__dirname}/node_modules/electron`)
   });
@@ -23,7 +23,11 @@ if (isDev()) {
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 1200, height: 800 });
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    autoHideMenuBar: true, // 自动隐藏菜单栏（按alt键显示）
+  });
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html");
@@ -68,6 +72,7 @@ app.on("activate", function () {
     createWindow();
   }
 });
+
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
