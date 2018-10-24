@@ -6,6 +6,7 @@ export const startTypes = {
     over: "over",
     stop: "stop",
     pause: "pause",
+    continue: "continue",
     incrPastTime: "incrPastTime",
     updateSetTime: "updateSetTime",
 };

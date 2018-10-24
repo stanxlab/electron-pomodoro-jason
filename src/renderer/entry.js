@@ -2,9 +2,8 @@
 // global webIpc test.
 webIpc.indexTest();
 
-// ts 部分代码文件
-import "./test.ts";
-
+// ts 部分代码文件  test
+// import "./test.ts";
 
 
 // Vue 代码
