@@ -12,7 +12,7 @@
 
   // new
   .center-time-wrap {
-    border: 1px solid #9f71db;
+    // border: 1px solid #9f71db; // debug
     position: absolute;
     top: 0;
     width: 100%;
@@ -20,7 +20,7 @@
   }
   .center-time-inner {
     background-color: #e9eef3; // 覆盖进度条文字
-    border: 1px solid #9f71db;
+    // border: 1px solid #9f71db; // debug
     height: 100px;
     line-height: 100px;
     margin-top: 130px;
@@ -30,6 +30,7 @@
     text-align: center;
     line-height: 100px;
     font-size: 50px;
+    color: #05ede1;
   }
   .ipt-time {
     width: 70px;
@@ -47,7 +48,7 @@
     <div id="start-wrapper">
         
         <el-row :gutter="10" class="time-wrapper">
-            <el-progress type="circle" :width="360" :stroke-width="10" :percentage="pastPercent"></el-progress>
+            <el-progress type="circle" :width="progress.diameter" :color="progress.color" :stroke-width="10" :percentage="pastPercent"></el-progress>
 
             <div class="center-time-wrap" >
                   <!-- <el-col :span="8"><div class="grid-content bg-purple"></div></el-col> -->
@@ -101,7 +102,11 @@ import { mapGetters, mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
-      progress_diameter: 360, // 进度条直径
+      progress: {
+        diameter: 360, // 进度条直径
+        // color: "#E54B4B" // 工作颜色
+        color: "#05ede1" // 休息颜色
+      },
       _timer_1: null
     };
   },

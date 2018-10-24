@@ -2,19 +2,19 @@
 <template>
     <div id="vue-root">
       <el-container>
-        <el-header></el-header>
+        <el-header style="z-index:999;"><Header/></el-header>
         <el-container>
             <!-- <el-aside width="100px">
               Aside
             </el-aside> -->
 
             <el-main>
-               <Start></Start>
+               <Start />
             </el-main>
         </el-container>
 
         <el-footer>
-             <SystemInfo></SystemInfo> 
+             <SystemInfo />
         </el-footer>
     </el-container>
     </div>
@@ -24,12 +24,13 @@
 <script>
 console.log("msg from app.vue");
 import Start from "./components/Start";
+import Header from "./components/Header";
 import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
 
 export default {
   name: "app-index",
-  components: { Start, SystemInfo },
+  components: { Start, SystemInfo, Header },
   methods: {
     test() {
       console.log("appp: ", this.$store);
