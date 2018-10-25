@@ -1,5 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, globalShortcut, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut, dialog, Tray, Menu } = require("electron");
+const path = require("path");
+
 
 if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = "production";
 
@@ -18,11 +20,27 @@ if (isDev()) {
   });
 }
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on("second-instance", (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let tray = null;
 
 function createWindow() {
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -36,8 +54,41 @@ function createWindow() {
 
   // Emitted when the window is closed.
   mainWindow.on("closed", function () {
+    mainWindow.destroy();
     mainWindow = null;
+    tray.destroy();
+    tray = null;
   });
+
+
+  // My托盘测试
+  mainWindow.on("hide", () => {
+    tray.setHighlightMode("never");
+  });
+  // 当我们点击关闭时触发close事件，我们按照之前的思路在关闭时，隐藏窗口，隐藏任务栏窗口
+  // event.preventDefault(); 禁止关闭行为(非常必要，因为我们并不是想要关闭窗口，所以需要禁止默认行为)
+  mainWindow.on("close", (event) => {
+    mainWindow.hide();
+    mainWindow.setSkipTaskbar(true);
+    event.preventDefault();
+  });
+  //创建系统通知区菜单
+  tray = new Tray(path.join(__dirname, "./src/icon/icon_48.ico"));
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Exit", click: () => {
+        mainWindow.destroy();
+        app.quit();
+      }
+    },//我们需要在这里有一个真正的退出（这里直接强制退出）
+  ]);
+  tray.setToolTip("PomodoroJason");
+  tray.setContextMenu(contextMenu);
+  tray.on("click", () => { //我们这里模拟桌面程序点击通知区图标实现打开关闭应用的功能
+    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+    mainWindow.isVisible() ? mainWindow.setSkipTaskbar(false) : mainWindow.setSkipTaskbar(true);
+  });
+
 
   if (isDev()) {
     mainWindow.webContents.openDevTools({ mode: "right" });
