@@ -96,12 +96,18 @@ const mutations = {
         state.lastStatus = "";
     },
     [startTypes.updateSetTime](state, vaule) {
-        state.setTime = vaule;
-        // 同时修改配置, TODO: 
-        if (state.status === STATUS.toWork) {
-            config.workTime = state.setTime;
+        if (vaule === "forceWork") {
+            state.setTime = config.workTime;
+        } else if (vaule === "forceRest") {
+            state.setTime = config.shotRestTime;
         } else {
-            config.shotRestTime = state.setTime;
+            state.setTime = vaule;
+            // 同时修改配置, TODO: 
+            if (state.status === STATUS.toWork) {
+                config.workTime = state.setTime;
+            } else {
+                config.shotRestTime = state.setTime;
+            }
         }
     },
     [startTypes.incrPastTime](state, fixVal) {
@@ -137,6 +143,16 @@ let _timer_1 = null;
 const actions = {
     increment: ({ commit }) => commit("increment"),
 
+    [startTypes.start_work_force]: ({ commit, dispatch }) => {
+        console.log("强制重新开始工作");
+        commit(startTypes.updateSetTime, "forceWork");
+        dispatch(startTypes.start_work);
+    },
+    [startTypes.start_rest_force]: ({ commit, dispatch }) => {
+        console.log("强制重新开始休息");
+        commit(startTypes.updateSetTime, "forceRest");
+        dispatch(startTypes.start_rest);
+    },
     [startTypes.start_work]: ({ commit, dispatch }) => {
         dispatch("_stopTimer");
         commit("resetTime");
@@ -217,7 +233,7 @@ const getters = {
         return state.status === STATUS.toRest;
     },
     isToWork: state => { // 要进入到休息
-        return state.status === STATUS.toWork;
+        return state.status === STATUS.toWork || state.lastStatus === STATUS.working;
     },
 };
 

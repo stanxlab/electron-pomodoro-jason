@@ -7,9 +7,9 @@
                 <el-dropdown split-button type="primary">
                     <i class="el-icon-menu"></i>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="startWork">开始集中精力</el-dropdown-item>
-                        <el-dropdown-item @click.native="startRest">开始短暂休息</el-dropdown-item>
-                        <el-dropdown-item>开始长时间休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="startWorkForce">开始集中精力</el-dropdown-item>
+                        <el-dropdown-item @click.native="startRestForce">开始短暂休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="startRestForce">开始长时间休息</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -78,7 +78,7 @@ export default {
   computed: {
     progressColor() {
       // console.log("----", this.isWorking);
-      if (this.isWorking) {
+      if (this.isWorking || this.isToWork) {
         return this.progress.workColor;
       } else {
         return this.progress.restColor;
@@ -86,7 +86,7 @@ export default {
     },
     timeColorClass() {
       return {
-        workColor: this.isWorking // 是否使用 workColor 这个 class
+        workColor: this.isWorking || this.isToWork // 是否使用 workColor 这个 class
       };
     },
     setTime: {
@@ -140,6 +140,12 @@ export default {
     startRest() {
       this.$store.dispatch(startTypes.start_rest);
       //this._startInterval();
+    },
+    startWorkForce() {
+      this.$store.dispatch(startTypes.start_work_force);
+    },
+    startRestForce() {
+      this.$store.dispatch(startTypes.start_rest_force);
     },
 
     over() {

@@ -51,9 +51,12 @@ body {
 }
 .el-footer {
   // background-color: #b3c0d1;
+  position: absolute;
   color: #333;
   text-align: center;
   line-height: 40px;
+  bottom: 10px;
+  width: 98%;
 }
 
 .el-aside {
