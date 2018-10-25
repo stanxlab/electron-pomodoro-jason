@@ -1,70 +1,64 @@
 
 <template>
-    <div id="start-wrapper">
-       <div class="header-menu">
-          <el-row>
+<div id="start-wrapper">
+    <div class="header-menu">
+        <el-row>
             <el-col :span="6" :offset="18">
-              <el-dropdown split-button type="primary">
-                <i class="el-icon-menu"></i>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="startWork">开始集中精力</el-dropdown-item>
-                    <el-dropdown-item @click.native="startRest">开始短暂休息</el-dropdown-item>
-                    <el-dropdown-item>开始长时间休息</el-dropdown-item>
-                </el-dropdown-menu>
-             </el-dropdown>
-          </el-col>
+                <el-dropdown split-button type="primary">
+                    <i class="el-icon-menu"></i>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native="startWork">开始集中精力</el-dropdown-item>
+                        <el-dropdown-item @click.native="startRest">开始短暂休息</el-dropdown-item>
+                        <el-dropdown-item>开始长时间休息</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-col>
         </el-row>
-       </div>
-
-        <el-row :gutter="10" class="time-wrapper">
-            <el-progress type="circle" :width="progress.diameter" :color="progressColor" :stroke-width="10" :percentage="pastPercent"></el-progress>
-
-            <div class="center-time-wrap" >
-                  <!-- <el-col :span="8"><div class="grid-content bg-purple"></div></el-col> -->
-                  <el-col :span="8" :offset="8">
-                    <div class="center-time-inner" >
-                      <div v-if="isWorking || isResting || isPauseing">
-                       <span class="display-time">{{displayTime}}</span>
-                      </div>
-                      <div v-else>
-                        <el-input v-model="setTime"  size="medium"
-                            class="ipt-time" 
-                        placeholder="setTime"></el-input>
-                      </div> 
-                  </div>
-                </el-col>
-
-            </div>
-        </el-row>
-
-        <el-row :gutter="20">
-            <div v-if="isWorking || isResting">
-                <el-button v-on:click="stop()">停止</el-button>
-                <el-button  v-on:click="pause()">暂停</el-button>
-            </div>
-             <div v-else-if="isPauseing">
-                <el-button v-on:click="stop()">停止</el-button>
-                <el-button v-on:click="toContinue()">继续</el-button>
-            </div>
-             <div v-else-if="isToRest">
-                <el-button type="primary" v-on:click="startRest()">开始短暂休息</el-button>
-            </div>
-             <div v-else-if="isToWork">
-                <el-button type="danger" v-on:click="startWork()">开始集中精力</el-button>
-            </div>
-             <div v-else>
-                <el-button type="danger" v-on:click="startWork()">开始集中精力</el-button>
-            </div>
-        </el-row>
-
-        <el-row :gutter="20">
-    
-          <el-button v-on:click="test()">test-{{count}}--{{total}}</el-button>
-          <el-button v-on:click="increment()">Incr</el-button>
-        
-        </el-row>
-
     </div>
+
+    <el-row :gutter="10" class="time-wrapper">
+        <el-progress type="circle" :width="progress.diameter" :color="progressColor" :stroke-width="10" :percentage="pastPercent"></el-progress>
+
+        <div class="center-time-wrap">
+            <el-col :span="8" :offset="8">
+                <div class="center-time-inner">
+                    <div v-if="isWorking || isResting || isPauseing">
+                        <span class="display-time">{{displayTime}}</span>
+                    </div>
+                    <div v-else>
+                        <el-input v-model="setTime" size="medium" class="ipt-time" placeholder="setTime"></el-input>
+                    </div>
+                </div>
+            </el-col>
+
+        </div>
+    </el-row>
+
+    <el-row :gutter="20">
+        <div v-if="isWorking || isResting">
+            <el-button type="danger" round @click="stop()">停止</el-button>
+            <el-button round @click="pause()">暂停</el-button>
+        </div>
+        <div v-else-if="isPauseing">
+            <el-button type="danger" round @click="stop()">停止</el-button>
+            <el-button type="success" round @click="toContinue()">继续</el-button>
+        </div>
+        <div v-else-if="isToRest">
+            <el-button type="primary" @click="startRest()">开始短暂休息</el-button>
+        </div>
+        <div v-else-if="isToWork">
+            <el-button type="danger" @click="startWork()">开始集中精力</el-button>
+        </div>
+        <div v-else>
+            <el-button type="danger" @click="startWork()">开始集中精力</el-button>
+        </div>
+    </el-row>
+
+    <el-row :gutter="20">
+        <el-button @click="test()">test-{{count}}--{{total}}</el-button>
+        <el-button @click="increment()">Incr</el-button>
+    </el-row>
+</div>
 </template>
 
 <script>
@@ -192,9 +186,9 @@ export default {
   }
 
   // 进度条与背景颜色一致
-  // .el-progress__text {
-  //   color: #e9eef3;
-  // }
+  .el-progress__text {
+    color: #e9eef3;
+  }
 
   // new
   .center-time-wrap {
@@ -205,7 +199,6 @@ export default {
     height: 360px;
   }
   .center-time-inner {
-    background-color: #e9eef3; // 覆盖进度条文字
     // border: 1px solid #9f71db; // debug
     height: 100px;
     line-height: 100px;

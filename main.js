@@ -27,6 +27,7 @@ function createWindow() {
     width: 1200,
     height: 800,
     autoHideMenuBar: true, // 自动隐藏菜单栏（按alt键显示）
+    icon: "./src/icon/icon_48.ico",
   });
 
   // and load the index.html of the app.
@@ -39,6 +40,8 @@ function createWindow() {
   });
 
   if (isDev()) {
+    mainWindow.webContents.openDevTools({ mode: "right" });
+  } else {
     mainWindow.webContents.openDevTools({ mode: "right" });
   }
 

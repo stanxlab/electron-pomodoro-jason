@@ -1,24 +1,28 @@
 
 import { startTypes } from "../../constants";
 
+const debugPastMulti = 1; // 调试时时钟倍率
+
 /**
  * 用户存储的配置 || 默认配置
  */
-const config = JSON.parse(localStorage.getItem("config") || "{}");
-Object.assign(config, {
-    workTime: 2, // 工作时间
-    shotRestTime: 1, // 短暂休息时间
+const defaultConfig = {
+    workTime: 25, // 工作时间
+    shotRestTime: 5, // 短暂休息时间
     longRestTime: 15, // 长暂休息时间
     longRestGap: 3, // 长休息时间的间隔(3个短 1 长)
     autoToNext: 0, // 是否自动进入下一个阶段, 默认: 否 TODO: 
-});
+};
+
+let config = JSON.parse(localStorage.getItem("config") || "{}");
+config = Object.assign({}, defaultConfig, config);
 
 const STATUS = {
-    toWork: 'toWork', // 要进入工作状态, 默认
-    toRest: 'toRest',
-    working: 'working',
-    resting: 'resting',
-    pause: 'pause',
+    toWork: "toWork", // 要进入工作状态, 默认
+    toRest: "toRest",
+    working: "working",
+    resting: "resting",
+    pause: "pause",
 };
 
 const state = {
@@ -32,9 +36,7 @@ const state = {
     displayTime: "", // 倒计时显示的时钟
 
     lastStatus: "", // 上一步的状态
-    curStatus: "none", // 当前状态
-
-    status: 'toWork',
+    status: "toWork",
 };
 
 const mutations = {
@@ -52,11 +54,11 @@ const mutations = {
     },
     [startTypes.over](state) {
         if (state.status === STATUS.working) {
-            console.log('工作时间结束,准备进入短暂休息');
+            console.log("工作时间结束,准备进入短暂休息");
             state.status = STATUS.toRest;
             state.setTime = config.shotRestTime;
         } else {
-            console.log('短暂休息结束,准备进入工作');
+            console.log("短暂休息结束,准备进入工作");
             state.status = STATUS.toWork;
             state.setTime = config.workTime;
         }
@@ -68,11 +70,11 @@ const mutations = {
     // 强制停止怎么处理?
     [startTypes.stop](state) {
         if (state.status === STATUS.working) {
-            console.log('工作时间强制停止, 进入 准备工作状态');
+            console.log("工作时间强制停止, 进入 准备工作状态");
             state.status = STATUS.toWork;
             state.setTime = config.workTime;
         } else {
-            console.log('工作时间强制停止, 进入 准备休息状态');
+            console.log("工作时间强制停止, 进入 准备休息状态");
             state.status = STATUS.toRest;
             state.setTime = config.shotRestTime;
         }
@@ -81,13 +83,13 @@ const mutations = {
         state.displayTime = "";
     },
     [startTypes.pause](state) {
-        console.log('暂停, 设置暂停状态,记录原来的状态');
+        console.log("暂停, 设置暂停状态,记录原来的状态");
         state.lastStatus = state.status;
         state.status = STATUS.pause;
     },
     [startTypes.continue](state) {
         state.status = state.lastStatus;
-        state.lastStatus = '';
+        state.lastStatus = "";
     },
     [startTypes.updateSetTime](state, vaule) {
         state.setTime = vaule;
@@ -99,7 +101,7 @@ const mutations = {
         }
     },
     [startTypes.incrPastTime](state, fixVal) {
-        state.pastTime += fixVal || state.intervalGap * 20;
+        state.pastTime += fixVal || state.intervalGap * debugPastMulti;
         state.pastPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
         state.displayTime = _toTimeString(state.totalTime - state.pastTime);
     }
@@ -133,14 +135,14 @@ const actions = {
     },
     [startTypes.start_work]: ({ commit, dispatch }) => {
         commit(startTypes.start_work);
-        dispatch('_startInterval');
+        dispatch("_startInterval");
     },
     [startTypes.start_rest]: ({ commit, dispatch }) => {
         commit(startTypes.start_rest);
-        dispatch('_startInterval');
+        dispatch("_startInterval");
     },
     [startTypes.over]: ({ commit, state }) => {
-        console.log('over--', state.curStatus, state.lastStatus);
+        console.log("over--", state.curStatus, state.lastStatus);
         commit(startTypes.over);
     },
     [startTypes.incrPastTime]: ({ commit }, fixVal) => commit(startTypes.incrPastTime, fixVal),
@@ -151,7 +153,7 @@ const actions = {
     },
     [startTypes.continue]: ({ commit, dispatch }) => {
         commit(startTypes.continue);
-        dispatch('_startInterval');
+        dispatch("_startInterval");
     },
     [startTypes.stop]: ({ commit }) => {
         clearInterval(_timer_1);
@@ -163,7 +165,7 @@ const actions = {
         _timer_1 = setInterval(() => {
             // console.log(state.pastTime, state.totalTime);
             if (state.pastTime >= state.totalTime) {
-                dispatch('_curOver');
+                dispatch("_curOver");
                 return;
             }
             commit(startTypes.incrPastTime);
@@ -196,10 +198,10 @@ const getters = {
     isResting: state => state.status === STATUS.resting,
     isPauseing: state => state.status === STATUS.pause,
     isToRest: state => { // 要进入到休息
-        return state.status === STATUS.toRest
+        return state.status === STATUS.toRest;
     },
     isToWork: state => { // 要进入到休息
-        return state.status === STATUS.toWork
+        return state.status === STATUS.toWork;
     },
 };
 
