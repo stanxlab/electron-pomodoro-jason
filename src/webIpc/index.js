@@ -39,8 +39,11 @@ test();
 
 
 module.exports = class webIpc {
-    static setFullScreen(isFull) {
-        main.setFullScreen(isFull);
+    static setFullScreen() {
+        main.setFullScreen(true);
+    }
+    static cancelFullScreen() {
+        main.setFullScreen(false);
     }
 
     static indexTest() {

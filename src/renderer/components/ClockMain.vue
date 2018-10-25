@@ -23,7 +23,7 @@
             <el-col :span="8" :offset="8">
                 <div class="center-time-inner">
                     <div v-if="isWorking || isResting || isPauseing">
-                        <span class="display-time">{{displayTime}}</span>
+                        <span class="display-time" :class="timeColorClass">{{displayTime}}</span>
                     </div>
                     <div v-else>
                         <el-input v-model="setTime" size="medium" class="ipt-time" placeholder="setTime"></el-input>
@@ -70,7 +70,7 @@ export default {
     return {
       progress: {
         diameter: 360, // 进度条直径
-        workColor: "#E54B4B", // 工作颜色
+        workColor: "#e54b4b", // 工作颜色
         restColor: "#05ede1" // 休息颜色
       }
     };
@@ -83,6 +83,11 @@ export default {
       } else {
         return this.progress.restColor;
       }
+    },
+    timeColorClass() {
+      return {
+        workColor: this.isWorking // 是否使用 workColor 这个 class
+      };
     },
     setTime: {
       get() {
@@ -210,6 +215,9 @@ export default {
     line-height: 100px;
     font-size: 50px;
     color: #05ede1;
+  }
+  span.display-time.workColor {
+    color: #e54b4b;
   }
   .ipt-time {
     width: 70px;

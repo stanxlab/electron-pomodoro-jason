@@ -25,13 +25,15 @@ const STATUS = {
     pause: "pause",
 };
 
+const startPercent = 0; // 倒: 100, 正序 0;
+
 const state = {
     count: 10,
 
     setTime: config.workTime, // 用户可以临时设置的时间
     pastTime: 0, // 已经过去的时间
     totalTime: 0, // 总时间
-    pastPercent: 0, // 过去的比例
+    pastPercent: startPercent, // 过去的比例
     intervalGap: 1, // 定时器间隔 1s
     displayTime: "", // 倒计时显示的时钟
 
@@ -64,7 +66,7 @@ const mutations = {
         }
 
         state.pastTime = 0;
-        state.pastPercent = 0;
+        state.pastPercent = startPercent;
         state.displayTime = "";
     },
     // 强制停止怎么处理?
@@ -74,12 +76,14 @@ const mutations = {
             state.status = STATUS.toWork;
             state.setTime = config.workTime;
         } else {
-            console.log("工作时间强制停止, 进入 准备休息状态");
+            console.log("休息时间强制停止, 进入 准备休息状态");
             state.status = STATUS.toRest;
             state.setTime = config.shotRestTime;
         }
+    },
+    resetTime(state) {
         state.pastTime = 0;
-        state.pastPercent = 0;
+        state.pastPercent = startPercent;
         state.displayTime = "";
     },
     [startTypes.pause](state) {
@@ -102,7 +106,10 @@ const mutations = {
     },
     [startTypes.incrPastTime](state, fixVal) {
         state.pastTime += fixVal || state.intervalGap * debugPastMulti;
-        state.pastPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
+        let tmpPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
+
+        state.pastPercent = Math.abs(startPercent - tmpPercent);
+
         state.displayTime = _toTimeString(state.totalTime - state.pastTime);
     }
 };
@@ -129,22 +136,27 @@ let _timer_1 = null;
 
 const actions = {
     increment: ({ commit }) => commit("increment"),
-    [startTypes.start]: ({ commit, state }) => {
-        console.log("start-, state.lastStatus: ", state.lastStatus);
-        commit(startTypes.start_work);
-    },
+
     [startTypes.start_work]: ({ commit, dispatch }) => {
+        dispatch("_stopTimer");
+        commit("resetTime");
+
         commit(startTypes.start_work);
         dispatch("_startInterval");
+        webIpc.cancelFullScreen();
     },
     [startTypes.start_rest]: ({ commit, dispatch }) => {
+        dispatch("_stopTimer");
+        commit("resetTime");
+
         commit(startTypes.start_rest);
         dispatch("_startInterval");
+        webIpc.cancelFullScreen();
     },
-    [startTypes.over]: ({ commit, state }) => {
-        console.log("over--", state.curStatus, state.lastStatus);
-        commit(startTypes.over);
-    },
+    // [startTypes.over]: ({ commit, state }) => {
+    //     console.log("over--", state.curStatus, state.lastStatus);
+    //     commit(startTypes.over);
+    // },
     [startTypes.incrPastTime]: ({ commit }, fixVal) => commit(startTypes.incrPastTime, fixVal),
     [startTypes.pause]: ({ commit }) => {
         clearInterval(_timer_1);
@@ -155,10 +167,10 @@ const actions = {
         commit(startTypes.continue);
         dispatch("_startInterval");
     },
-    [startTypes.stop]: ({ commit }) => {
-        clearInterval(_timer_1);
-        _timer_1 = null;
+    [startTypes.stop]: ({ commit, dispatch }) => {
+        dispatch("_stopTimer");
         commit(startTypes.stop);
+        commit("resetTime");
     },
     _startInterval({ commit, state, dispatch }) {
         commit(startTypes.incrPastTime, 0);
@@ -171,12 +183,16 @@ const actions = {
             commit(startTypes.incrPastTime);
         }, state.intervalGap * 1000);
     },
+    _stopTimer() {
+        clearInterval(_timer_1);
+        _timer_1 = null;
+    },
     _curOver({ commit, state, dispatch }) {
         commit(startTypes.over);
         clearInterval(_timer_1);
         _timer_1 = null;
         // 屏幕强制全屏弹出
-        webIpc.setFullScreen(true);
+        webIpc.setFullScreen();
         webIpc.showMainWindow();
     },
     // incrementAsync({ commit }) {

@@ -42,7 +42,7 @@ function createWindow() {
   if (isDev()) {
     mainWindow.webContents.openDevTools({ mode: "right" });
   } else {
-    mainWindow.webContents.openDevTools({ mode: "right" });
+    mainWindow.webContents.openDevTools({ mode: "bottom" });
   }
 
   __initEvent();
@@ -51,6 +51,7 @@ function createWindow() {
 function __initEvent() {
   globalShortcut.register("ESC", () => {
     mainWindow.setFullScreen(false);
+    mainWindow.show();
   });
 }
 
