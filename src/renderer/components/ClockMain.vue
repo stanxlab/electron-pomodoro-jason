@@ -54,7 +54,7 @@
         </div>
     </el-row>
 
-    <el-row :gutter="20">
+    <el-row :gutter="20" class="hide-">
         <el-button @click="test()">test-{{count}}--{{total}}</el-button>
         <el-button @click="increment()">Incr</el-button>
     </el-row>
@@ -155,11 +155,17 @@ export default {
       // webIpc.showMainWindow();
     },
     test() {
+      //
+      let myNotification = new Notification("测试标题", {
+        body: "右下角通知!!!"
+      });
+      myNotification.onclick = () => {
+        console.log("通知已被点击");
+      };
       // shell 模块不能用???
       // let shell = webIpc.getShell();
       // 在用户默认浏览器中打开URL的示例:
       // shell.openExternal("https://github.com");
-      console.log(this.workTime, this.$store.state.clockMain);
       return;
       // 打开新窗口
       let url = "https://github.com";
@@ -199,6 +205,10 @@ export default {
   // 进度条与背景颜色一致
   .el-progress__text {
     color: #e9eef3;
+  }
+
+  .hide {
+    display: none;
   }
 
   // new

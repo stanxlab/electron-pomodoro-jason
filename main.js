@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut, dialog } = require("electron");
 
 if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = "production";
 
@@ -48,10 +48,22 @@ function createWindow() {
   __initEvent();
 }
 
+
+// 绑定快捷键等
 function __initEvent() {
   globalShortcut.register("ESC", () => {
     mainWindow.setFullScreen(false);
     mainWindow.show();
+  });
+
+  globalShortcut.register("CommandOrControl+Alt+K", function () {
+    console.log("快捷键, 按下了CommandOrControl+Alt+K");
+    dialog.showMessageBox({
+      type: "info",
+      message: "成功!",
+      detail: "你按下了一个全局注册的快捷键绑定.",
+      buttons: ["好的"]
+    });
   });
 }
 
@@ -67,6 +79,10 @@ app.on("window-all-closed", function () {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("will-quit", function () {
+  globalShortcut.unregisterAll();
 });
 
 app.on("activate", function () {
