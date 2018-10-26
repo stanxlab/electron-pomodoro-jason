@@ -1,7 +1,7 @@
 
 import { startTypes } from "../../constants";
 
-const debugPastMulti = 1; // 调试时时钟倍率
+window.debugPastMulti = 1; // 调试时时钟倍率
 
 /**
  * 用户存储的配置 || 默认配置
@@ -103,15 +103,15 @@ const mutations = {
         } else {
             state.setTime = vaule;
             // 同时修改配置, TODO: 
-            if (state.status === STATUS.toWork) {
-                config.workTime = state.setTime;
-            } else {
-                config.shotRestTime = state.setTime;
-            }
+            // if (state.status === STATUS.toWork) {
+            //     config.workTime = state.setTime;
+            // } else {
+            //     config.shotRestTime = state.setTime;
+            // }
         }
     },
     [startTypes.incrPastTime](state, fixVal) {
-        state.pastTime += fixVal || state.intervalGap * debugPastMulti;
+        state.pastTime += fixVal || state.intervalGap * window.debugPastMulti;
         let tmpPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
 
         state.pastPercent = Math.abs(startPercent - tmpPercent);
@@ -210,6 +210,7 @@ const actions = {
         // 屏幕强制全屏弹出
         webIpc.setFullScreen();
         webIpc.showMainWindow();
+        webIpc.playMusic("over");
     },
     // incrementAsync({ commit }) {
     //     return new Promise((resolve, reject) => {

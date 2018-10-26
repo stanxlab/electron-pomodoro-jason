@@ -9,6 +9,7 @@
     "dev": "parcel watch src/renderer/entry.js",
     "start": "cross-env NODE_ENV=development electron .",
     "buildjs": "parcel build src/renderer/entry.js",
+    "packagedebug": "electron-packager ./ pomodoro-jason --out ../OutApp --icon=./src/icon/icon_48.ico --overwrite",
     "package": "electron-packager ./ pomodoro-jason --out ./OutApp --icon=./src/icon/icon_48.ico --overwrite"
   },
   "alias": {

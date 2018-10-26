@@ -37,7 +37,6 @@ test();
 //     main.setFullScreen(isFull);
 // };
 
-
 module.exports = class webIpc {
     static setFullScreen() {
         main.setFullScreen(true);
@@ -63,4 +62,8 @@ module.exports = class webIpc {
         main.showMainWindow();
     }
 
+    static playMusic(type = "over") {
+        let mediaElement = window.document.getElementById("over-music");
+        mediaElement && mediaElement.play();
+    }
 };

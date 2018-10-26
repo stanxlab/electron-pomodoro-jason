@@ -57,6 +57,7 @@
     <el-row :gutter="20" class="hide-">
         <el-button @click="test()">test-{{count}}--{{total}}</el-button>
         <el-button @click="increment()">Incr</el-button>
+        <el-button @click="playMusic()">music</el-button>
     </el-row>
 </div>
 </template>
@@ -148,11 +149,8 @@ export default {
       this.$store.dispatch(startTypes.start_rest_force);
     },
 
-    over() {
-      // console.log(Date.now() - stime, new Date().toLocaleString());
-      // 强制显示主页面
-      // this.setFullScreen();
-      // webIpc.showMainWindow();
+    playMusic() {
+      webIpc.playMusic("over");
     },
     test() {
       //
@@ -175,12 +173,6 @@ export default {
         BrowserWindowProxy.close();
       }, 5000);
       return;
-
-      // 新建窗口
-      // const BrowserWindow = webIpc.getBrowserWindow();
-      // var win = new BrowserWindow({ width: 800, height: 600 });
-      // win.setFullScreen(true);
-      // win.loadURL(url);
     }
   }
 };
