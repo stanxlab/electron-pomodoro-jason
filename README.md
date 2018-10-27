@@ -35,8 +35,9 @@ npm run package
 
 ## TODO: 
 - [x] play mp3 audio
-- [] 最小化到托盘时 快捷菜单
-
+- [x] 最小化到托盘时 快捷菜单
+- setting page
+- 
 
 ## build
 

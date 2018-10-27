@@ -39,6 +39,7 @@ const state = {
 
     lastStatus: "", // 上一步的状态
     status: "toWork",
+    isOver: false,
 };
 
 const mutations = {
@@ -47,10 +48,12 @@ const mutations = {
         state.count++;
     },
     [startTypes.start_work](state) {
+        state.isOver = false;
         state.status = STATUS.working;
         state.totalTime = state.setTime * 60; // 设置的时间为分钟,转换为秒
     },
     [startTypes.start_rest](state) {
+        state.isOver = false;
         state.status = STATUS.resting;
         state.totalTime = state.setTime * 60;
     },
@@ -68,9 +71,11 @@ const mutations = {
         state.pastTime = 0;
         state.pastPercent = startPercent;
         state.displayTime = "";
+        state.isOver = true;
     },
     // 强制停止怎么处理?
     [startTypes.stop](state) {
+        state.isOver = false;
         if (state.status === STATUS.working) {
             console.log("工作时间强制停止, 进入 准备工作状态");
             state.status = STATUS.toWork;
@@ -91,7 +96,7 @@ const mutations = {
         state.lastStatus = state.status;
         state.status = STATUS.pause;
     },
-    [startTypes.continue](state) {
+    [startTypes.toContinue](state) {
         state.status = state.lastStatus;
         state.lastStatus = "";
     },
@@ -114,7 +119,7 @@ const mutations = {
         state.pastTime += fixVal || state.intervalGap * window.debugPastMulti;
         let tmpPercent = parseFloat((state.pastTime / state.totalTime * 100).toFixed(2));
 
-        state.pastPercent = Math.abs(startPercent - tmpPercent);
+        state.pastPercent = Math.min(Math.abs(startPercent - tmpPercent), 100);
 
         state.displayTime = _toTimeString(state.totalTime - state.pastTime);
     }
@@ -169,18 +174,14 @@ const actions = {
         dispatch("_startInterval");
         webIpc.cancelFullScreen();
     },
-    // [startTypes.over]: ({ commit, state }) => {
-    //     console.log("over--", state.curStatus, state.lastStatus);
-    //     commit(startTypes.over);
-    // },
     [startTypes.incrPastTime]: ({ commit }, fixVal) => commit(startTypes.incrPastTime, fixVal),
     [startTypes.pause]: ({ commit }) => {
         clearInterval(_timer_1);
         _timer_1 = null;
         commit(startTypes.pause);
     },
-    [startTypes.continue]: ({ commit, dispatch }) => {
-        commit(startTypes.continue);
+    [startTypes.toContinue]: ({ commit, dispatch }) => {
+        commit(startTypes.toContinue);
         dispatch("_startInterval");
     },
     [startTypes.stop]: ({ commit, dispatch }) => {
@@ -191,7 +192,6 @@ const actions = {
     _startInterval({ commit, state, dispatch }) {
         commit(startTypes.incrPastTime, 0);
         _timer_1 = setInterval(() => {
-            // console.log(state.pastTime, state.totalTime);
             if (state.pastTime >= state.totalTime) {
                 dispatch("_curOver");
                 return;
@@ -207,10 +207,6 @@ const actions = {
         commit(startTypes.over);
         clearInterval(_timer_1);
         _timer_1 = null;
-        // 屏幕强制全屏弹出
-        webIpc.setFullScreen();
-        webIpc.showMainWindow();
-        webIpc.playMusic("over");
     },
     // incrementAsync({ commit }) {
     //     return new Promise((resolve, reject) => {
@@ -226,6 +222,7 @@ const actions = {
 const getters = {
     // test
     cartTotal: state => state.count * 2,
+    isOver: state => state.isOver,
 
     isWorking: state => state.status === STATUS.working,
     isResting: state => state.status === STATUS.resting,

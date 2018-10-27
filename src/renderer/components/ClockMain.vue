@@ -7,9 +7,10 @@
                 <el-dropdown split-button type="primary">
                     <i class="el-icon-menu"></i>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="startWorkForce">开始集中精力</el-dropdown-item>
-                        <el-dropdown-item @click.native="startRestForce">开始短暂休息</el-dropdown-item>
-                        <el-dropdown-item @click.native="startRestForce">开始长时间休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="start_work_force">开始集中精力</el-dropdown-item>
+                        <el-dropdown-item @click.native="start_rest_force">开始短暂休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="start_rest_force">开始长时间休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="toSetting">设置</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -44,13 +45,13 @@
             <el-button type="success" round @click="toContinue()">继续</el-button>
         </div>
         <div v-else-if="isToRest">
-            <el-button type="primary" @click="startRest()">开始短暂休息</el-button>
+            <el-button type="primary" @click="start_rest()">开始短暂休息</el-button>
         </div>
         <div v-else-if="isToWork">
-            <el-button type="danger" @click="startWork()">开始集中精力</el-button>
+            <el-button type="danger" @click="start_work()">开始集中精力</el-button>
         </div>
         <div v-else>
-            <el-button type="danger" @click="startWork()">开始集中精力</el-button>
+            <el-button type="danger" @click="start_work()">开始集中精力</el-button>
         </div>
     </el-row>
 
@@ -111,42 +112,52 @@ export default {
       isResting: "isResting",
       isPauseing: "isPauseing",
       isToWork: "isToWork",
-      isToRest: "isToRest"
+      isToRest: "isToRest",
+      isOver: "isOver"
     })
   },
-  created() {},
-  methods: {
-    ...mapActions(["increment"]),
-    setFullScreen() {
-      webIpc.setFullScreen(true);
-    },
-    cancelFullScreen() {
-      webIpc.setFullScreen(false);
-    },
-
-    stop() {
-      return this.$store.dispatch(startTypes.stop);
-    },
-    pause() {
-      return this.$store.dispatch(startTypes.pause);
-    },
-    toContinue() {
-      this.$store.dispatch(startTypes.continue);
-      // this._startInterval();
-    },
-    startWork() {
-      this.$store.dispatch(startTypes.start_work);
-      //this._startInterval();
-    },
-    startRest() {
-      this.$store.dispatch(startTypes.start_rest);
-      //this._startInterval();
-    },
-    startWorkForce() {
+  created() {
+    // 初始化给主进程用的回调方法
+    webIpc.setMainCallback(startTypes.start_work_force, () => {
+      console.log("主进程调用 start_work_force", this.$store.state);
+      this.$router.push("/");
       this.$store.dispatch(startTypes.start_work_force);
-    },
-    startRestForce() {
+    });
+    webIpc.setMainCallback(startTypes.start_rest_force, data => {
+      console.log("主进程调用 start_rest_force", data);
+      this.$router.push("/");
       this.$store.dispatch(startTypes.start_rest_force);
+    });
+    webIpc.setMainCallback("setting", data => {
+      console.log("主进程调用 setting", data);
+      this.$router.push("/setting");
+    });
+  },
+  watch: {
+    // 监听是否结束了当前计时, 结束则进入到全屏,并播放音乐
+    isOver(isNowOver, oldVal) {
+      console.log("watch isOver: ", isNowOver, oldVal);
+      if (isNowOver) {
+        // 屏幕强制全屏弹出
+        webIpc.setFullScreen();
+        webIpc.showMainWindow();
+        webIpc.playMusic("over");
+      }
+    }
+  },
+  methods: {
+    ...mapActions([
+      "increment",
+      startTypes.stop,
+      startTypes.pause,
+      startTypes.toContinue,
+      startTypes.start_work,
+      startTypes.start_rest,
+      startTypes.start_work_force,
+      startTypes.start_rest_force
+    ]),
+    toSetting() {
+      this.$router.push("/setting");
     },
 
     playMusic() {
@@ -156,6 +167,10 @@ export default {
       //
       let myNotification = new Notification("测试标题", {
         body: "右下角通知!!!"
+        // dir: "auto",
+        // data: { test: "tttss" }
+        // icon: "./src/icon/icon_128.ico",
+        // tag: "tag--"
       });
       myNotification.onclick = () => {
         console.log("通知已被点击");
@@ -177,7 +192,6 @@ export default {
   }
 };
 </script>
-
 
 <style lang="scss" scope>
 #start-wrapper {

@@ -14,15 +14,25 @@ import Vue from "vue";
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
-
-import App from "./App";
-import store from "./store";
-
 Vue.use(ElementUI);
 
+import store from "./store";
+
+
+// 不使用路由的方式
+/** 
+ import App from "./App";
+ new Vue({
+     components: { App },
+     router,
+     store,
+     template: "<App/>"
+    }).$mount("#vue-root");
+*/
+
+// 使用路由的方式
+import router from "./router";
 new Vue({
-    components: { App },
-    // router,
+    router,
     store,
-    template: "<App/>"
 }).$mount("#vue-root");

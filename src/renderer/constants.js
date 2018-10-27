@@ -8,7 +8,7 @@ export const startTypes = {
     over: "over",
     stop: "stop",
     pause: "pause",
-    continue: "continue",
+    toContinue: "toContinue",
     incrPastTime: "incrPastTime",
     updateSetTime: "updateSetTime",
 };
