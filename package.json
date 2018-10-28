@@ -6,9 +6,9 @@
   "repository": "https://github.com/zengxp0605/electron-pomodoro-jason",
   "author": "Jason Zeng",
   "scripts": {
-    "dev": "parcel watch src/renderer/entry.js",
+    "dev": "parcel watch src/renderer/entry.js --public-url ./dist/",
     "start": "cross-env NODE_ENV=development electron .",
-    "buildjs": "parcel build src/renderer/entry.js",
+    "buildjs": "rm -rf .cache && parcel build src/renderer/entry.js --no-cache",
     "packagedebug": "electron-packager ./ pomodoro-jason --out ../OutApp --icon=./src/icon/icon_48.ico --overwrite",
     "package": "electron-packager ./ pomodoro-jason --out ./OutApp --icon=./src/icon/icon_48.ico --overwrite"
   },
