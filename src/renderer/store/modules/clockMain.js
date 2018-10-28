@@ -8,13 +8,33 @@ window.debugPastMulti = 1; // 调试时时钟倍率
  */
 const defaultConfig = {
     workTime: 25, // 工作时间
-    shotRestTime: 5, // 短暂休息时间
+    shortRestTime: 5, // 短暂休息时间
     longRestTime: 15, // 长暂休息时间
     longRestGap: 3, // 长休息时间的间隔(3个短 1 长)
     autoToNext: 0, // 是否自动进入下一个阶段, 默认: 否 TODO: 
 };
 
-let config = JSON.parse(localStorage.getItem("config") || "{}");
+function getLocalConfig(itemKey) {
+    if (itemKey) {
+        return localStorage.getItem(itemKey);
+    }
+    //JSON.parse(localStorage.getItem("config") || "{}")
+    let obj = {};
+    for (let k in defaultConfig) {
+        obj[k] = localStorage.getItem(k);
+    }
+    return obj;
+}
+
+function setLocalConfig(itemKey, val) {
+    if (typeof val !== 'string') {
+        val = JSON.stringify(val);
+    }
+    return localStorage.setItem(itemKey, val);
+}
+
+
+let config = getLocalConfig();
 config = Object.assign({}, defaultConfig, config);
 
 const STATUS = {
@@ -30,6 +50,7 @@ const startPercent = 0; // 倒: 100, 正序 0;
 const state = {
     count: 10,
 
+    config,
     setTime: config.workTime, // 用户可以临时设置的时间
     pastTime: 0, // 已经过去的时间
     totalTime: 0, // 总时间
@@ -61,7 +82,7 @@ const mutations = {
         if (state.status === STATUS.working) {
             console.log("工作时间结束,准备进入短暂休息");
             state.status = STATUS.toRest;
-            state.setTime = config.shotRestTime;
+            state.setTime = config.shortRestTime;
         } else {
             console.log("短暂休息结束,准备进入工作");
             state.status = STATUS.toWork;
@@ -83,7 +104,7 @@ const mutations = {
         } else {
             console.log("休息时间强制停止, 进入 准备休息状态");
             state.status = STATUS.toRest;
-            state.setTime = config.shotRestTime;
+            state.setTime = config.shortRestTime;
         }
     },
     resetTime(state) {
@@ -100,19 +121,13 @@ const mutations = {
         state.status = state.lastStatus;
         state.lastStatus = "";
     },
-    [startTypes.updateSetTime](state, vaule) {
-        if (vaule === "forceWork") {
+    [startTypes.updateSetTime](state, value) {
+        if (value === "forceWork") {
             state.setTime = config.workTime;
-        } else if (vaule === "forceRest") {
-            state.setTime = config.shotRestTime;
+        } else if (value === "forceRest") {
+            state.setTime = config.shortRestTime;
         } else {
-            state.setTime = vaule;
-            // 同时修改配置, TODO: 
-            // if (state.status === STATUS.toWork) {
-            //     config.workTime = state.setTime;
-            // } else {
-            //     config.shotRestTime = state.setTime;
-            // }
+            state.setTime = value;
         }
     },
     [startTypes.incrPastTime](state, fixVal) {
@@ -122,6 +137,21 @@ const mutations = {
         state.pastPercent = Math.min(Math.abs(startPercent - tmpPercent), 100);
 
         state.displayTime = _toTimeString(state.totalTime - state.pastTime);
+    },
+    // 修改并保存配置
+    updateConfig(state, { field, value }) {
+        value = value | 0;
+        console.log("updateConfig: ", { field, value });
+        state.config[field] = value;
+        setLocalConfig(field, value);
+        if (state.status === STATUS.toRest
+            && field === 'shortRestTime') {
+            state.setTime = value;
+        } else if (
+            state.status === STATUS.toWork
+            && field === 'workTime') {
+            state.setTime = value;
+        }
     }
 };
 
@@ -147,6 +177,11 @@ let _timer_1 = null;
 
 const actions = {
     increment: ({ commit }) => commit("increment"),
+    setConfig: ({ commit }, { field, value }) => {
+        // 
+        console.log("setConfig: ", { field, value });
+        commit('updateConfig', { field, value });
+    },
 
     [startTypes.start_work_force]: ({ commit, dispatch }) => {
         console.log("强制重新开始工作");

@@ -1,36 +1,28 @@
 
 <template>
-    <div id="vue-root">
+  <div>
       <el-container>
-        <!-- <el-header style="z-index:999;"><Header/></el-header> -->
-        <el-container>
-            <!-- <el-aside width="100px">
-              Aside
-            </el-aside> -->
-
-            <el-main>
-               <ClockMain />
-            </el-main>
-        </el-container>
+        <Header></Header>
+        <el-main>
+            <router-view></router-view>
+        </el-main>
 
         <el-footer>
              <SystemInfo />
         </el-footer>
       </el-container>
-    </div>
+  </div>
 </template>
 
 
 <script>
-console.log("msg from app.vue");
-import ClockMain from "./components/ClockMain";
 import Header from "./components/Header";
 import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
 
 export default {
   name: "app-index",
-  components: { ClockMain, SystemInfo, Header },
+  components: { SystemInfo, Header },
   methods: {
     test() {
       console.log("appp: ", this.$store);
@@ -45,10 +37,6 @@ body {
 }
 
 // rongqi
-.el-header {
-  text-align: center;
-  line-height: 40px;
-}
 .el-footer {
   // background-color: #b3c0d1;
   position: absolute;
@@ -59,30 +47,12 @@ body {
   width: 98%;
 }
 
-.el-aside {
-  background-color: #d3dce6;
-  color: #333;
-  text-align: center;
-  line-height: 200px;
-}
-
 .el-main {
+  position: relative;
+  margin-top: 80px;
   color: #333;
   text-align: center;
   // line-height: 160px;
-}
-
-// body > .el-container {
-//   margin-bottom: 40px;
-// }
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
 }
 
 // buju

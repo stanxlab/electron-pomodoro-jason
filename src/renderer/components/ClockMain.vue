@@ -1,65 +1,49 @@
 
 <template>
-<div id="start-wrapper">
-    <div class="header-menu">
-        <el-row>
-            <el-col :span="6" :offset="18">
-                <el-dropdown split-button type="primary">
-                    <i class="el-icon-menu"></i>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="start_work_force">开始集中精力</el-dropdown-item>
-                        <el-dropdown-item @click.native="start_rest_force">开始短暂休息</el-dropdown-item>
-                        <el-dropdown-item @click.native="start_rest_force">开始长时间休息</el-dropdown-item>
-                        <el-dropdown-item @click.native="toSetting">设置</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </el-col>
-        </el-row>
-    </div>
+<div>
+  <el-row :gutter="10" class="time-wrapper">
+      <el-progress type="circle" :width="progress.diameter" :color="progressColor" :stroke-width="10" :percentage="pastPercent"></el-progress>
 
-    <el-row :gutter="10" class="time-wrapper">
-        <el-progress type="circle" :width="progress.diameter" :color="progressColor" :stroke-width="10" :percentage="pastPercent"></el-progress>
+      <div class="center-time-wrap">
+          <el-col :span="8" :offset="8">
+              <div class="center-time-inner">
+                  <div v-if="isWorking || isResting || isPauseing">
+                      <span class="display-time" :class="timeColorClass">{{displayTime}}</span>
+                  </div>
+                  <div v-else>
+                      <el-input v-model="setTime" size="medium" class="ipt-time" placeholder="setTime"></el-input>
+                  </div>
+              </div>
+          </el-col>
 
-        <div class="center-time-wrap">
-            <el-col :span="8" :offset="8">
-                <div class="center-time-inner">
-                    <div v-if="isWorking || isResting || isPauseing">
-                        <span class="display-time" :class="timeColorClass">{{displayTime}}</span>
-                    </div>
-                    <div v-else>
-                        <el-input v-model="setTime" size="medium" class="ipt-time" placeholder="setTime"></el-input>
-                    </div>
-                </div>
-            </el-col>
+      </div>
+  </el-row>
 
-        </div>
-    </el-row>
+  <el-row :gutter="20">
+      <div v-if="isWorking || isResting">
+          <el-button type="danger" round @click="stop()">停止</el-button>
+          <el-button round @click="pause()">暂停</el-button>
+      </div>
+      <div v-else-if="isPauseing">
+          <el-button type="danger" round @click="stop()">停止</el-button>
+          <el-button type="success" round @click="toContinue()">继续</el-button>
+      </div>
+      <div v-else-if="isToRest">
+          <el-button type="primary" @click="start_rest()">开始短暂休息</el-button>
+      </div>
+      <div v-else-if="isToWork">
+          <el-button type="danger" @click="start_work()">开始集中精力</el-button>
+      </div>
+      <div v-else>
+          <el-button type="danger" @click="start_work()">开始集中精力</el-button>
+      </div>
+  </el-row>
 
-    <el-row :gutter="20">
-        <div v-if="isWorking || isResting">
-            <el-button type="danger" round @click="stop()">停止</el-button>
-            <el-button round @click="pause()">暂停</el-button>
-        </div>
-        <div v-else-if="isPauseing">
-            <el-button type="danger" round @click="stop()">停止</el-button>
-            <el-button type="success" round @click="toContinue()">继续</el-button>
-        </div>
-        <div v-else-if="isToRest">
-            <el-button type="primary" @click="start_rest()">开始短暂休息</el-button>
-        </div>
-        <div v-else-if="isToWork">
-            <el-button type="danger" @click="start_work()">开始集中精力</el-button>
-        </div>
-        <div v-else>
-            <el-button type="danger" @click="start_work()">开始集中精力</el-button>
-        </div>
-    </el-row>
-
-    <el-row :gutter="20" class="hide-">
-        <el-button @click="test()">test-{{count}}--{{total}}</el-button>
-        <el-button @click="increment()">Incr</el-button>
-        <el-button @click="playMusic()">music</el-button>
-    </el-row>
+  <el-row :gutter="20" class="hide-">
+      <el-button @click="test()">test-{{count}}--{{total}}</el-button>
+      <el-button @click="increment()">Incr</el-button>
+      <el-button @click="playMusic()">music</el-button>
+  </el-row>
 </div>
 </template>
 
@@ -116,23 +100,7 @@ export default {
       isOver: "isOver"
     })
   },
-  created() {
-    // 初始化给主进程用的回调方法
-    webIpc.setMainCallback(startTypes.start_work_force, () => {
-      console.log("主进程调用 start_work_force", this.$store.state);
-      this.$router.push("/");
-      this.$store.dispatch(startTypes.start_work_force);
-    });
-    webIpc.setMainCallback(startTypes.start_rest_force, data => {
-      console.log("主进程调用 start_rest_force", data);
-      this.$router.push("/");
-      this.$store.dispatch(startTypes.start_rest_force);
-    });
-    webIpc.setMainCallback("setting", data => {
-      console.log("主进程调用 setting", data);
-      this.$router.push("/setting");
-    });
-  },
+
   watch: {
     // 监听是否结束了当前计时, 结束则进入到全屏,并播放音乐
     isOver(isNowOver, oldVal) {
@@ -156,9 +124,6 @@ export default {
       startTypes.start_work_force,
       startTypes.start_rest_force
     ]),
-    toSetting() {
-      this.$router.push("/setting");
-    },
 
     playMusic() {
       webIpc.playMusic("over");
@@ -194,61 +159,46 @@ export default {
 </script>
 
 <style lang="scss" scope>
-#start-wrapper {
-  .header-menu {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    line-height: 60px;
-    width: 100%;
-  }
+// 进度条与背景颜色一致
+.el-progress__text {
+  color: #e9eef3;
+}
 
-  .time-wrapper {
-    position: relative;
-    margin-top: 80px;
-  }
+.hide {
+  display: none;
+}
 
-  // 进度条与背景颜色一致
-  .el-progress__text {
-    color: #e9eef3;
-  }
-
-  .hide {
-    display: none;
-  }
-
-  // new
-  .center-time-wrap {
-    // border: 1px solid #9f71db; // debug
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 360px;
-  }
-  .center-time-inner {
-    // border: 1px solid #9f71db; // debug
-    height: 100px;
-    line-height: 100px;
-    margin-top: 130px;
-    text-align: center;
-  }
-  span.display-time {
-    text-align: center;
-    line-height: 100px;
-    font-size: 50px;
-    color: #05ede1;
-  }
-  span.display-time.workColor {
-    color: #e54b4b;
-  }
-  .ipt-time {
-    width: 70px;
-    text-align: center;
-    font-size: 25px;
-  }
-  .ipt-time input {
-    padding: 5px;
-    text-align: center;
-  }
+// new
+.center-time-wrap {
+  // border: 1px solid #9f71db; // debug
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 360px;
+}
+.center-time-inner {
+  // border: 1px solid #9f71db; // debug
+  height: 100px;
+  line-height: 100px;
+  margin-top: 130px;
+  text-align: center;
+}
+span.display-time {
+  text-align: center;
+  line-height: 100px;
+  font-size: 50px;
+  color: #05ede1;
+}
+span.display-time.workColor {
+  color: #e54b4b;
+}
+.ipt-time {
+  width: 70px;
+  text-align: center;
+  font-size: 25px;
+}
+.ipt-time input {
+  padding: 5px;
+  text-align: center;
 }
 </style>

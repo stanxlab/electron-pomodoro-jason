@@ -30,6 +30,8 @@ class webIpc {
             switch (e.keyCode) {
                 case 27:  // ESC, 退出全屏
                     this.cancelFullScreen();
+                case 13:  // Enter, 退出全屏
+                    this.cancelFullScreen();
                     break;
             }
         };

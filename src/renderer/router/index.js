@@ -4,7 +4,8 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 import LandingPage from '../components/LandingPage.vue';
-import App from '../App.vue';
+import ClockMain from "../components/ClockMain.vue";
+import Setting from "../components/Setting.vue";
 
 export default new Router({
   routes: [
@@ -20,11 +21,11 @@ export default new Router({
     // },
     {
       path: '/',
-      component: App,
+      component: ClockMain,
     },
     {
       path: '/setting',
-      component: LandingPage,
+      component: Setting,
     },
     {
       path: '/landing',
