@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "parcel watch src/renderer/entry.js --public-url ./dist/",
     "start": "cross-env NODE_ENV=development electron .",
-    "buildjs": "rm -rf .cache && parcel build src/renderer/entry.js --no-cache",
+    "buildjs": "rm -rf .cache && parcel build src/renderer/entry.js --no-cache --public-url ./dist/",
     "packagedebug": "electron-packager ./ pomodoro-jason --out ../OutApp --icon=./src/icon/icon_48.ico --overwrite",
     "package": "electron-packager ./ pomodoro-jason --out ./OutApp --icon=./src/icon/icon_48.ico --overwrite"
   },

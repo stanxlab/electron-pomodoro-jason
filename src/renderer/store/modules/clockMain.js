@@ -21,13 +21,14 @@ function getLocalConfig(itemKey) {
     //JSON.parse(localStorage.getItem("config") || "{}")
     let obj = {};
     for (let k in defaultConfig) {
-        obj[k] = localStorage.getItem(k);
+        let val = localStorage.getItem(k);
+        val && (obj[k] = val);
     }
     return obj;
 }
 
 function setLocalConfig(itemKey, val) {
-    if (typeof val !== 'string') {
+    if (typeof val !== "string") {
         val = JSON.stringify(val);
     }
     return localStorage.setItem(itemKey, val);
@@ -145,11 +146,11 @@ const mutations = {
         state.config[field] = value;
         setLocalConfig(field, value);
         if (state.status === STATUS.toRest
-            && field === 'shortRestTime') {
+            && field === "shortRestTime") {
             state.setTime = value;
         } else if (
             state.status === STATUS.toWork
-            && field === 'workTime') {
+            && field === "workTime") {
             state.setTime = value;
         }
     }
@@ -180,7 +181,7 @@ const actions = {
     setConfig: ({ commit }, { field, value }) => {
         // 
         console.log("setConfig: ", { field, value });
-        commit('updateConfig', { field, value });
+        commit("updateConfig", { field, value });
     },
 
     [startTypes.start_work_force]: ({ commit, dispatch }) => {

@@ -35,6 +35,10 @@
       </el-form>
     </el-col>
   </el-row>
+  <el-row :gutter="10">
+    <img class="logo" src="../assets/G-1.png" alt="image test">
+  </el-row>
+
 </div>
 </template>
 
@@ -75,6 +79,12 @@ export default {
 #setting-wrapper {
   .el-col {
     border: 1px solid rgb(113, 149, 182);
+  }
+
+  .logo {
+    height: auto;
+    margin-bottom: 20px;
+    width: 128px;
   }
 
   h3 {
