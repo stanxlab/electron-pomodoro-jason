@@ -1,5 +1,5 @@
 <template>
-    <div id="system-info">
+    <div id="system-info" v-show="showDevBtn">
         <el-row :gutter="10">
             <el-col :span="6">
               <div class="grid-content bg-purple title">
@@ -30,6 +30,7 @@ export default {
   name: "system-info",
   data() {
     return {
+      showDevBtn: webIpc.isProductionEnv() ? false : true,
       process: webIpc.getProcess()
     };
   }

@@ -21,7 +21,6 @@ import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
 
 export default {
-  name: "app-index",
   components: { SystemInfo, Header },
   methods: {
     test() {
