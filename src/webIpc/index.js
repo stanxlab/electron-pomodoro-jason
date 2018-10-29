@@ -30,8 +30,12 @@ class webIpc {
             switch (e.keyCode) {
                 case 27:  // ESC, 退出全屏
                     this.cancelFullScreen();
+                    break;
                 case 13:  // Enter, 退出全屏
                     this.cancelFullScreen();
+                    break;
+                case 123:  // F12 调试面板
+                    this.openDevTools();
                     break;
             }
         };
@@ -42,6 +46,9 @@ class webIpc {
     }
     static cancelFullScreen() {
         main.setFullScreen(false);
+    }
+    static openDevTools() {
+        main.openDevTools();
     }
 
     static indexTest() {

@@ -7,12 +7,9 @@
         <el-form-item label="持续时间">
           <el-input v-model="workForm.time" placeholder="xx分钟"></el-input>
         </el-form-item>
-        <el-form-item label="其他">
+        <!-- <el-form-item label="其他">
           <el-input v-model="workForm.t1" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item>
-          <!-- <el-button type="primary" @click="onSubmit">查询</el-button> -->
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </el-col>
   </el-row>

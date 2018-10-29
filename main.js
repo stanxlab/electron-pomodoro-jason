@@ -306,6 +306,10 @@ exports.setFullScreen = (isFull) => {
   Main.mainWindow.setFullScreen(isFull ? true : false);
 };
 
+exports.openDevTools = (mode = 'right') => {
+  Main.mainWindow.webContents.openDevTools({ mode });
+};
+
 // 显示主界面
 exports.showMainWindow = () => {
   Main.mainWindow.show();
