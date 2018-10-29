@@ -120,9 +120,7 @@ export default {
       startTypes.pause,
       startTypes.toContinue,
       startTypes.start_work,
-      startTypes.start_rest,
-      startTypes.start_work_force,
-      startTypes.start_rest_force
+      startTypes.start_rest
     ]),
 
     playMusic() {

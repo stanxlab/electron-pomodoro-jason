@@ -8,12 +8,13 @@ if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = "production";
 console.info("Main start, NODE_ENV:", process.env.NODE_ENV);
 
 // 自定义的检测文件变化自动刷新页面, electorn-reload 经常无法检测到 dist 编译后的变化???
+// TODO: main.js 变动不会退出进程, 需要处理
 const debugWatchFiles = (files) => {
   const chokidar = require("chokidar");
   const _ = require("lodash");
 
-  const onChange = (fp) => {
-    console.log('watch---', fp);
+  const onChange = (filepath) => {
+    console.log('watch---', filepath);
     Main.mainWindow && Main.mainWindow.webContents.reloadIgnoringCache();
   };
 

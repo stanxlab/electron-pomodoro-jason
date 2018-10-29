@@ -39,6 +39,10 @@ export default {
     });
   },
   methods: {
+       ...mapActions([
+      startTypes.start_work_force,
+      startTypes.start_rest_force
+    ]),
     toSetting() {
       this.$router.push("/setting");
     },
