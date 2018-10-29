@@ -11,9 +11,9 @@ class webIpc {
         this.mainCallbacks = {};
         // 监听主进程的命令
         ipcRenderer.on("sync-router", (event, arg) => {
-            console.log('Renderer sync-router: ', arg);
+            console.log("Renderer sync-router: ", arg);
             let { cmd, params = {} } = arg;
-            if (typeof this.mainCallbacks[cmd] === 'function') {
+            if (typeof this.mainCallbacks[cmd] === "function") {
                 this.mainCallbacks[cmd](params);
             } else {
                 console.error(`主进程命令的回调函数未定义,${cmd}`);
@@ -26,7 +26,7 @@ class webIpc {
     // 绑定window键盘事件
     static _bingKeyDown() {
         window.onkeydown = (e) => {
-            console.log('keyDown: ', String.fromCharCode(e.keyCode) + " --> " + e.keyCode);
+            console.log("keyDown: ", String.fromCharCode(e.keyCode) + " --> " + e.keyCode);
             switch (e.keyCode) {
                 case 27:  // ESC, 退出全屏
                     this.cancelFullScreen();
@@ -58,6 +58,13 @@ class webIpc {
     static getProcess() {
         return process;
     }
+    static getEnv() {
+        return process.env.NODE_ENV;
+    }
+
+    static isProductionEnv() {
+        return this.getEnv() === "production";
+    }
 
     static getBrowserWindow() {
         return remote.BrowserWindow;
@@ -72,7 +79,7 @@ class webIpc {
         let mediaElement = window.document.getElementById("over-music");
         mediaElement && mediaElement.play();
     }
-};
+}
 
 webIpc.init();
 

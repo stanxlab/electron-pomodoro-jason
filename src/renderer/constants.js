@@ -5,6 +5,7 @@ export const startTypes = {
     start_rest: "start_rest",
     start_work_force: "start_work_force",
     start_rest_force: "start_rest_force",
+    start_long_rest_force: "start_long_rest_force",
     over: "over",
     stop: "stop",
     pause: "pause",

@@ -9,6 +9,8 @@
 > 需要修改parcel 包下 reload 模块的源码, 屏蔽启用`WebSocket`的地方
 ```
 
+npm install -g parcel-bundler
+
 # 实时编译js
 npm run dev
 
@@ -37,7 +39,10 @@ npm run package
 - [x] play mp3 audio
 - [x] 最小化到托盘时 快捷菜单
 - [] setting page
+- [] 长时间休息,长休间隔
 - [] audio select
+- [] 自动更新到最新版本
+
 
 ## build
 

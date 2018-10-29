@@ -39,7 +39,7 @@
       </div>
   </el-row>
 
-  <el-row :gutter="20" class="hide-">
+  <el-row :gutter="20" v-if="showDevBtn">
       <el-button @click="test()">test-{{count}}--{{total}}</el-button>
       <el-button @click="increment()">Incr</el-button>
       <el-button @click="playMusic()">music</el-button>
@@ -54,6 +54,7 @@ import { mapGetters, mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
+      showDevBtn: webIpc.isProductionEnv() ? false : true,
       progress: {
         diameter: 360, // 进度条直径
         workColor: "#e54b4b", // 工作颜色

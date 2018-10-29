@@ -7,7 +7,7 @@
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item @click.native="start_work_force">开始集中精力</el-dropdown-item>
                         <el-dropdown-item @click.native="start_rest_force">开始短暂休息</el-dropdown-item>
-                        <el-dropdown-item @click.native="start_rest_force">开始长时间休息</el-dropdown-item>
+                        <el-dropdown-item @click.native="start_long_rest_force">开始长时间休息</el-dropdown-item>
                         <el-dropdown-item @click.native="toSetting">设置</el-dropdown-item>
                         <el-dropdown-item @click.native="toHome">首页</el-dropdown-item>
                     </el-dropdown-menu>
@@ -31,7 +31,11 @@ export default {
     webIpc.setMainCallback(startTypes.start_rest_force, data => {
       console.log("主进程调用 start_rest_force", data);
       this.$router.push("/");
-      this.$store.dispatch(startTypes.start_rest_force);
+      if (data && data.isLong) {
+        this.$store.dispatch(startTypes.start_long_rest_force);
+      } else {
+        this.$store.dispatch(startTypes.start_rest_force);
+      }
     });
     webIpc.setMainCallback("setting", data => {
       console.log("主进程调用 setting", data);
@@ -39,9 +43,10 @@ export default {
     });
   },
   methods: {
-       ...mapActions([
+    ...mapActions([
       startTypes.start_work_force,
-      startTypes.start_rest_force
+      startTypes.start_rest_force,
+      startTypes.start_long_rest_force
     ]),
     toSetting() {
       this.$router.push("/setting");

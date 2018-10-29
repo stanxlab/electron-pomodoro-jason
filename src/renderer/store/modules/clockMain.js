@@ -127,6 +127,8 @@ const mutations = {
             state.setTime = config.workTime;
         } else if (value === "forceRest") {
             state.setTime = config.shortRestTime;
+        } else if (value === "forceLongRest") {
+            state.setTime = config.longRestTime;
         } else {
             state.setTime = value;
         }
@@ -192,6 +194,11 @@ const actions = {
     [startTypes.start_rest_force]: ({ commit, dispatch }) => {
         console.log("强制重新开始休息");
         commit(startTypes.updateSetTime, "forceRest");
+        dispatch(startTypes.start_rest);
+    },
+    [startTypes.start_long_rest_force]: ({ commit, dispatch }) => {
+        console.log("开始长时间休息");
+        commit(startTypes.updateSetTime, "forceLongRest");
         dispatch(startTypes.start_rest);
     },
     [startTypes.start_work]: ({ commit, dispatch }) => {
