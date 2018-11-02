@@ -39,9 +39,12 @@ npm run package
 - [x] play mp3 audio
 - [x] 最小化到托盘时 快捷菜单
 - [] setting page
-- [] 长时间休息,长休间隔
+- [] 长时间休息,长休间隔,长休提示
 - [] audio select
 - [] 自动更新到最新版本
+- [] 背景图片,切换?
+- [] 历史记录
+- [] 信息反馈
 
 
 ## build

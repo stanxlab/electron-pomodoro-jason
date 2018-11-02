@@ -112,11 +112,19 @@ class Main {
       height: 800,
       autoHideMenuBar: true, // 自动隐藏菜单栏（按alt键显示）
       icon: "./src/icon/icon_48.ico",
+      // frame: false, // 无边框效果 <https://electron.org.cn/doc/api/frameless-window.html>
+      backgroundColor: '#2e2c29', // 
+      show: false, // `ready-to-show` 事件再显示
     });
 
     // and load the index.html of the app.
     this.mainWindow.loadFile("index.html");
     // this.mainWindow.loadURL("http://localhost:1234/test.html");
+
+    // 在加载页面时，渲染进程第一次完成绘制时，会发出 ready-to-show 事件
+    this.mainWindow.once('ready-to-show', () => {
+      this.mainWindow.show();
+    })
 
     // Emitted when the window is closed.
     this.mainWindow.on("closed", () => {
@@ -177,7 +185,7 @@ class Main {
         label: "开始集中精力",
         click: () => {
           MainIpc.sendCmdToRenderer("start_work_force");
-          this.mainWindow.hide();
+          // this.mainWindow.hide();
         }
       },
       {
@@ -304,6 +312,9 @@ exports.pong = arg => {
 // 设置全屏
 exports.setFullScreen = (isFull) => {
   Main.mainWindow.setFullScreen(isFull ? true : false);
+  if (!isFull) {
+    Main.mainWindow.setAlwaysOnTop(false);
+  }
 };
 
 exports.openDevTools = (mode = 'right') => {
@@ -312,6 +323,7 @@ exports.openDevTools = (mode = 'right') => {
 
 // 显示主界面
 exports.showMainWindow = () => {
-  Main.mainWindow.show();
   Main.mainWindow.focus();
+  Main.mainWindow.show();
+  Main.mainWindow.setAlwaysOnTop(true); // 
 };
