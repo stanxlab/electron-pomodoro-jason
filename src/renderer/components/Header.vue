@@ -3,7 +3,7 @@
         <el-row>
             <el-col :span="4" :offset="20">
                 <el-dropdown split-button type="primary">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-menu"></i> 
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item @click.native="start_work_force">开始集中精力</el-dropdown-item>
                         <el-dropdown-item @click.native="start_rest_force">开始短暂休息</el-dropdown-item>

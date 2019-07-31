@@ -62,12 +62,19 @@ const state = {
     lastStatus: "", // 上一步的状态
     status: "toWork",
     isOver: false,
+    showBgImg: false, // 是否显示背景图
 };
 
 const mutations = {
     // test
     increment(state) {
         state.count++;
+    },
+    showBgImg(state) {
+        state.showBgImg = true;
+    },
+    hideBgImg(state) {
+        state.showBgImg = false;
     },
     [startTypes.start_work](state) {
         state.isOver = false;
@@ -84,10 +91,16 @@ const mutations = {
             console.log("工作时间结束,准备进入短暂休息");
             state.status = STATUS.toRest;
             state.setTime = config.shortRestTime;
+            // state.showBgImg = true;
         } else {
-            console.log("短暂休息结束,准备进入工作");
+            console.log("短暂休息结束,准备进入工作,退出全屏");
             state.status = STATUS.toWork;
             state.setTime = config.workTime;
+            // 避免強制模式不能退出全屏
+            // state.showBgImg = false;
+            // setTimeout(() => {
+            //     webIpc.cancelFullScreen();
+            // }, 500);
         }
 
         state.pastTime = 0;
@@ -186,18 +199,30 @@ const actions = {
         commit("updateConfig", { field, value });
     },
 
-    [startTypes.start_work_force]: ({ commit, dispatch }) => {
-        console.log("强制重新开始工作");
+    [startTypes.start_work_force]: ({ commit, dispatch, state }) => {
+        console.log("强制重新开始工作", state, state.status);
+        if (window.SYS_FORCE_RESET_MODE && state.status == STATUS.resting) {
+            alert(`强制休息中,不能操作!!!`);
+            return;
+        }
         commit(startTypes.updateSetTime, "forceWork");
         dispatch(startTypes.start_work);
     },
     [startTypes.start_rest_force]: ({ commit, dispatch }) => {
         console.log("强制重新开始休息");
+        if (window.SYS_FORCE_RESET_MODE && state.status == STATUS.resting) {
+            alert(`强制休息中,不能操作!!!`);
+            return;
+        }
         commit(startTypes.updateSetTime, "forceRest");
         dispatch(startTypes.start_rest);
     },
     [startTypes.start_long_rest_force]: ({ commit, dispatch }) => {
         console.log("开始长时间休息");
+        if (window.SYS_FORCE_RESET_MODE && state.status == STATUS.resting) {
+            alert(`强制休息中,不能操作!!!`);
+            return;
+        }
         commit(startTypes.updateSetTime, "forceLongRest");
         dispatch(startTypes.start_rest);
     },
@@ -215,7 +240,10 @@ const actions = {
 
         commit(startTypes.start_rest);
         dispatch("_startInterval");
-        webIpc.cancelFullScreen();
+        // 強制休息模式不退出全屏
+        if (!window.SYS_FORCE_RESET_MODE) {
+            webIpc.cancelFullScreen();
+        }
     },
     [startTypes.incrPastTime]: ({ commit }, fixVal) => commit(startTypes.incrPastTime, fixVal),
     [startTypes.pause]: ({ commit }) => {

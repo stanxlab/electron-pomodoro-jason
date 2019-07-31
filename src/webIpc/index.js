@@ -29,10 +29,15 @@ class webIpc {
             console.log("keyDown: ", String.fromCharCode(e.keyCode) + " --> " + e.keyCode);
             switch (e.keyCode) {
                 case 27:  // ESC, 退出全屏
-                    this.cancelFullScreen();
+                    // 強制休息模式不能快捷退出全屏
+                    if (!window.SYS_FORCE_RESET_MODE) {
+                        this.cancelFullScreen();
+                    }
                     break;
                 case 13:  // Enter, 退出全屏
-                    this.cancelFullScreen();
+                    if (!window.SYS_FORCE_RESET_MODE) {
+                        this.cancelFullScreen();
+                    }
                     break;
                 case 123:  // F12 调试面板
                     this.openDevTools();
@@ -45,6 +50,7 @@ class webIpc {
         main.setFullScreen(true);
     }
     static cancelFullScreen() {
+        // return ; // TODO: 强制休息模式，不能退出全屏
         main.setFullScreen(false);
     }
     static openDevTools() {
@@ -70,6 +76,7 @@ class webIpc {
     }
 
     static isProductionEnv() {
+        // console.error('process.env.NODE_ENV', process.env.NODE_ENV);
         return this.getEnv() === "production";
     }
 

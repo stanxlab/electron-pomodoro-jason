@@ -6,31 +6,32 @@
   "repository": "https://github.com/zengxp0605/electron-pomodoro-jason",
   "author": "Jason Zeng",
   "scripts": {
-    "dev": "parcel watch src/renderer/entry.js --public-url ./dist/",
+    "dev": "parcel watch src/renderer/entry.js --public-url ./",
     "start": "cross-env NODE_ENV=development electron .",
-    "buildjs": "rm -rf .cache && parcel build src/renderer/entry.js --no-cache --public-url ./dist/",
+    "buildjs": "rm -rf .cache &&parcel build src/renderer/entry.js --no-cache --public-url ./",
     "packagedebug": "electron-packager ./ pomodoro-jason --out ../OutApp --icon=./src/icon/icon_48.ico --overwrite",
-    "package": "rm -rf .cache && parcel build src/renderer/entry.js --no-cache --public-url ./dist/ && electron-packager ./ pomodoro-jason --out ./OutApp --icon=./src/icon/icon_48.ico --overwrite"
+    "package": "rm -rf .cache dist && parcel build src/renderer/entry.js --no-cache --public-url ./ && electron-packager ./ pomodoro-jason --out ./OutApp --icon=./src/icon/icon_48.ico --overwrite"
   },
   "alias": {
     "vue": "./node_modules/vue/dist/vue.common.js"
   },
   "dependencies": {
-    "element-ui": "^2.4.8",
-    "lodash": "^4.17.11",
-    "vue": "^2.5.17",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "element-ui": "^2.10.1",
+    "lodash": "^4.17.15",
+    "parcel": "^1.12.3",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.7",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@vue/component-compiler-utils": "^2.3.0",
     "cross-env": "^5.2.0",
-    "cssnano": "^4.1.7",
-    "electron": "^3.0.6",
+    "cssnano": "^4.1.10",
+    "electron": "^3.1.12",
     "electron-packager": "^12.2.0",
-    "electron-reload": "^1.2.5",
-    "sass": "^1.14.3",
-    "vue-hot-reload-api": "^2.3.1",
-    "vue-template-compiler": "^2.5.17"
+    "electron-reload": "^1.4.1",
+    "sass": "^1.22.7",
+    "vue-hot-reload-api": "^2.3.3",
+    "vue-template-compiler": "^2.6.10"
   }
 }

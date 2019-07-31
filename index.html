@@ -25,6 +25,8 @@
   <script>
     // 标记给 parcel, 不使用Websocket 刷页面
     window.noWebSocket = true;
+    // 強制休息模式
+    window.SYS_FORCE_RESET_MODE = true;
 
     // You can also require other files to run in this process
     window.webIpc = require("./src/webIpc/index.js");

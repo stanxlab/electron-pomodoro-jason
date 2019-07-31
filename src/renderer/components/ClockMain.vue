@@ -1,6 +1,6 @@
 
 <template>
-<div>
+<div class="bg">
   <el-row :gutter="10" class="time-wrapper">
       <el-progress type="circle" :width="progress.diameter" :color="progressColor" :stroke-width="10" :percentage="pastPercent"></el-progress>
 
@@ -82,6 +82,12 @@ export default {
       },
       set(value) {
         console.log(`设置新时间: ${value}`);
+         if (webIpc.isProductionEnv()
+           && window.SYS_FORCE_RESET_MODE && value && value < 2 
+          ) {
+            value = 2;
+            console.log(`设置新时间,強制模式最短時間為: ${value}`);
+        }
         this.$store.commit(startTypes.updateSetTime, value);
       }
     },
@@ -158,6 +164,14 @@ export default {
 </script>
 
 <style lang="scss" scope>
+.bg-img{
+  position: absolute;
+  width: 100%;
+}
+
+.bg{
+  // background: url('../assets/G-1.png') center center no-repeat;
+}
 // 进度条与背景颜色一致
 .el-progress__text {
   color: #e9eef3;

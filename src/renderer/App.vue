@@ -1,6 +1,8 @@
 
 <template>
   <div>
+      <img v-if="showBgImg" class="bg-img" src="./assets/G-1.png" alt="image test">
+
       <el-container>
         <Header></Header>
         <el-main>
@@ -19,9 +21,19 @@
 import Header from "./components/Header";
 import SystemInfo from "./components/SystemInfo";
 // import LayoutDemo from "./components/LayoutDemo";
+import { mapState } from "vuex";
 
 export default {
   components: { SystemInfo, Header },
+  data (){
+    return {
+    };
+  },
+  computed: {
+     ...mapState({
+      showBgImg: state => state.clockMain.showBgImg,
+    }),
+  },
   methods: {
     test() {
       console.log("appp: ", this.$store);
