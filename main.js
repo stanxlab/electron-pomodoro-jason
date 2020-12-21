@@ -179,7 +179,7 @@ class Main {
       //return;
     }
     //创建系统通知区菜单
-    this.tray = new Tray(path.join(__dirname, "./src/icon/icon_48.ico"));
+    this.tray = new Tray(path.join(__dirname, "src/icon/c-3-min.png"));
     const contextMenu = Menu.buildFromTemplate([
       {
         label: "开始集中精力",
